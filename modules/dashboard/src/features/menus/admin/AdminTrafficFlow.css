@@ -1,0 +1,70 @@
+.admin-traffic-flow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  align-self: stretch;
+  flex-shrink: 0;
+  font-family: Roboto;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 16px;
+}
+.admin-traffic-flow-box {
+  display: flex;
+  box-sizing: border-box;
+  width: 144px;
+  height: 60px;
+  padding: 6px;
+  flex-shrink: 0;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 2px;
+  border-radius: 8px;
+  background: var(--color-neutral-800, #001a38);
+  text-align: center;
+  white-space: nowrap;
+}
+.admin-traffic-flow-title {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2px;
+  align-self: stretch;
+  color: #fff;
+}
+.admin-traffic-flow-description {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 2px;
+  color: var(--color-neutral-200, #b8c8d6);
+}
+.admin-traffic-flow-rates {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  flex: 1 0 0;
+}
+.admin-traffic-flow-rate {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+  white-space: nowrap;
+}
+.admin-traffic-flow-rate svg { flex-shrink: 0; }
+.admin-traffic-flow-rate.is-down { color: #5cc6ff; }
+.admin-traffic-flow-rate.is-up { color: #f2d230; }
+.admin-traffic-flow-arrow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex: 0 0 58px;
+  color: var(--color-primary, #1ea7ff);
+  text-align: center;
+}
+.admin-traffic-flow-arrow svg { flex-shrink: 0; }
+.admin-traffic-flow-unit { color: #fff; font-size: 12px; line-height: 14px; font-weight: 500; }

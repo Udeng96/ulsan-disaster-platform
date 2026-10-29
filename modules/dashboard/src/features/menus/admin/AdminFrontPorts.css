@@ -1,0 +1,408 @@
+.admin-hardware-panels {
+  display: flex;
+  height: 672px;
+  flex: 1 0 0;
+  min-width: 0;
+  flex-direction: column;
+  gap: 12px;
+}
+.admin-front-panel {
+  display: flex;
+  box-sizing: border-box;
+  min-height: 0;
+  padding: 20px 20px 8px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  flex: 1 0 0;
+  align-self: stretch;
+  border-radius: 16px;
+  background: var(--color-neutral-600, #002a54);
+  font-family: Roboto;
+  font-style: normal;
+}
+.admin-front-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  align-self: stretch;
+  color: #fff;
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 26px;
+}
+.admin-front-header h2 {
+  margin: 0;
+  font: inherit;
+}
+.admin-front-body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  flex: 1 0 0;
+  align-self: stretch;
+}
+.admin-front-rack-area {
+  position: relative;
+  display: flex;
+  width: 618px;
+  height: 80px;
+  flex-shrink: 0;
+  align-items: flex-end;
+}
+.admin-front-dimension-lines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+.admin-front-dimension-width,
+.admin-front-dimension-height {
+  position: absolute;
+  color: #a9c8e4;
+  text-align: center;
+  font-family: Roboto;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 14px;
+  white-space: nowrap;
+}
+.admin-front-dimension-width {
+  top: 0;
+  left: 0;
+  width: 592px;
+  height: 14px;
+}
+.admin-front-dimension-height {
+  top: 20px;
+  right: 1px;
+  width: 14px;
+  height: 60px;
+  writing-mode: vertical-rl;
+}
+.admin-front-rack {
+  position: relative;
+  width: 592px;
+  height: 60px;
+  flex-shrink: 0;
+  border-radius: 3px;
+  background: #1c5090;
+  box-shadow: inset 0 0 0 1px #4f8bcc;
+}
+.admin-front-ear {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 15px;
+  height: 60px;
+  border-radius: 3px;
+  background: #15406f;
+}
+.admin-front-ear:last-child {
+  left: auto;
+  right: 0;
+}
+.admin-front-ear span {
+  position: absolute;
+  top: 11px;
+  left: 5px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #0a2646;
+}
+.admin-front-ear span + span {
+  top: 44px;
+}
+.admin-front-brand-block {
+  position: absolute;
+  bottom: 3px;
+  left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.admin-front-brand {
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 14px;
+}
+.admin-front-controls {
+  display: flex;
+  height: 40px;
+  align-items: flex-end;
+  gap: 3px;
+}
+.admin-front-tall {
+  width: 11px;
+  height: 40px;
+  border-radius: 1px;
+  background: #e9eef4;
+}
+.admin-front-leds {
+  display: flex;
+  width: 13px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 7px;
+  margin-bottom: 2px;
+}
+.admin-front-led-row {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  align-self: stretch;
+  height: 4px;
+  color: #cfe2f5;
+  font-size: 3px;
+  font-weight: 400;
+  line-height: 4px;
+}
+.admin-front-led-row > span:first-child {
+  width: 7px;
+  flex-shrink: 0;
+}
+.admin-front-led-row:last-child {
+  height: 3px;
+  line-height: 3px;
+}
+.admin-front-led {
+  width: 4px;
+  height: 4px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--front-led-color);
+}
+.admin-front-led.is-normal { --front-led-color: var(--color-accent-green, #45e36c); }
+.admin-front-led.is-warn { --front-led-color: var(--color-accent-yellow, #ffd600); }
+.admin-front-led.is-error { --front-led-color: var(--color-accent-red, #ff4245); }
+.admin-front-reset {
+  width: 3px;
+  height: 3px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #0a1620;
+}
+.admin-front-usbs {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 3px;
+  margin-bottom: 2px;
+}
+.admin-front-usb {
+  display: flex;
+  width: 9px;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  color: #cfe2f5;
+  font-size: 3px;
+  font-weight: 400;
+  line-height: 4px;
+}
+.admin-front-usb-slot {
+  width: 9px;
+  height: 20px;
+  border-radius: 1px;
+  background: #0e2a4a;
+  box-shadow: inset 0 0 0 1px #4f8bcc;
+}
+.admin-front-ports {
+  position: absolute;
+  bottom: 5px;
+  left: 80px;
+  display: flex;
+  width: 74px;
+  height: 50px;
+  align-items: flex-end;
+  gap: 8px;
+}
+.admin-front-ports-horizontal {
+  display: flex;
+  gap: 2px;
+}
+.admin-front-ports-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.admin-front-port {
+  display: inline-flex;
+  width: 18px;
+  height: 27px;
+  flex-shrink: 0;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1px;
+  color: #cfe2f5;
+  font-size: 3px;
+  font-weight: 400;
+  line-height: 4px;
+}
+.admin-front-port svg {
+  flex-shrink: 0;
+}
+.admin-front-ports-vertical .admin-front-port {
+  width: 28px;
+  height: 22px;
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+  gap: 3px;
+}
+.admin-front-ports-vertical .admin-front-port > span {
+  width: 7px;
+  flex-shrink: 0;
+}
+
+/* HA 라벨 끝(80 + 74)에서 20px. 100px 모듈 4개 + gap 1px × 3. */
+.admin-front-modules {
+  position: absolute;
+  left: 174px;
+  bottom: 3px;
+  display: flex;
+  gap: 1px;
+}
+.admin-front-module {
+  position: relative;
+  width: 100px;
+  height: 54px;
+  flex-shrink: 0;
+  border-radius: 2px;
+  background: #252c33;
+}
+.admin-front-grid-module {
+  /* 인덱스 포함 50px 묶음을 중앙보다 1px 아래에 배치: 위 3px, 아래 1px. */
+  display: grid;
+  box-sizing: border-box;
+  padding-top: 2px;
+  grid-template-columns: 70px;
+  grid-template-rows: 3px 42px 3px;
+  align-content: center;
+  justify-content: center;
+  row-gap: 1px;
+}
+.admin-front-port-grid {
+  display: inline-grid;
+  width: 70px;
+  height: 42px;
+  grid-template-columns: repeat(4, 16px);
+  grid-template-rows: repeat(2, 20px);
+  gap: 2px;
+}
+.admin-front-port-grid svg {
+  display: block;
+}
+.admin-front-grid-indices {
+  display: flex;
+  height: 3px;
+  gap: 2px;
+  color: #9db2c6;
+  font-size: 3px;
+  font-weight: 400;
+  line-height: 3px;
+}
+.admin-front-grid-indices span {
+  width: 16px;
+  text-align: center;
+}
+.admin-front-one-gigabit-label {
+  position: absolute;
+  top: 5px;
+  right: 4px;
+  color: #9db2c6;
+  text-align: right;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 14px;
+}
+.admin-front-one-gigabit-ports {
+  position: absolute;
+  bottom: 5px;
+  left: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+}
+.admin-front-one-gigabit-pair {
+  display: flex;
+  width: 19px;
+  align-items: center;
+  gap: 1px;
+}
+.admin-front-one-gigabit-led {
+  width: 3px;
+  height: 3px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #3a444e;
+}
+.admin-front-one-gigabit-led.is-on {
+  background: #45e36c;
+}
+.admin-front-one-gigabit-port {
+  width: 15px;
+  height: 19px;
+  flex-shrink: 0;
+  border-radius: 1px;
+  background: #0e1319;
+  box-shadow: inset 0 0 0 1px #3a444e;
+}
+.admin-front-one-gigabit-port.is-on {
+  background: #2ecc5e;
+}
+.admin-front-vent {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.admin-front-vent-dots {
+  position: absolute;
+  top: 9px;
+  left: 9px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.admin-front-vent-row {
+  display: flex;
+  gap: 10px;
+}
+.admin-front-vent-row.is-offset {
+  margin-left: 6px;
+}
+.admin-front-vent-row span {
+  width: 3px;
+  height: 3px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #333e47;
+}
+.admin-front-platform-badge {
+  z-index: 1;
+  display: inline-flex;
+  box-sizing: border-box;
+  width: 60px;
+  padding: 8px;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  border-radius: 4px;
+  background: #f4f6f8;
+  color: #1a2430;
+  text-align: center;
+  font-size: 5px;
+  font-weight: 700;
+  line-height: 6px;
+  white-space: nowrap;
+}
+.admin-front-vent.has-badge .admin-front-vent-dots {
+  left: 15px;
+}
+.admin-front-vent.has-badge .admin-front-vent-row {
+  gap: 8px;
+}

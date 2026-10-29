@@ -1,0 +1,4725 @@
+@import "tailwindcss";
+@import "./shared/styles/fonts.css";
+@import "./shared/styles/tokens.css";
+@import "./shared/styles/base.css";
+
+/* ── 아래는 옛 화면 스타일. 메뉴를 새로 만들 때마다 그 메뉴 부분을 지운다. ── */
+@keyframes menu-btn-spin {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+@layer utilities {
+  /* 메뉴 버튼 — 304×104. 구조:
+       button.menu-btn
+        ├ ::before — conic-gradient 회전 border peak (.is-active 시 노출)
+        ├ .btn-inside — inset 3px 안쪽 패널 (gradient bg + border + shadow)
+        │   └ .btn-shimmer — radial 회전 shimmer (.is-active 시 노출)
+        └ .btn-text — 라벨 (z-index 최상)
+     ::before 의 conic peak (90°) 와 .btn-shimmer 의 radial 중심 (65% 50%) 이 같은 위치에서
+     같은 keyframe 으로 회전 → 시각 동기. */
+  .menu-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    /* 264 = (1920 - padding 36 - gap 6×6) / 7. 알약은 안쪽 3px 이라 보이는 폭이 258. */
+    width: 264px;
+    height: 104px;
+    border-radius: 16px;
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+  }
+  .menu-btn::before {
+    content: '';
+    position: absolute;
+    width: 400%;
+    height: 400%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(0deg);
+    background: conic-gradient(
+      from 0deg,
+      transparent 0deg,
+      transparent 70deg,
+      rgba(255, 255, 255, 0.95) 90deg,
+      transparent 110deg,
+      transparent 360deg
+    );
+    animation: menu-btn-spin 4s linear infinite;
+    opacity: 0;
+    z-index: 0;
+  }
+
+  .menu-btn .btn-inside {
+    position: absolute;
+    inset: 3px;
+    border-radius: 13px;
+    background: linear-gradient(176.15deg, #0E3E6E 7.84%, #002245 91.78%);
+    border: 1px solid rgba(175, 205, 238, 0.15);
+    box-shadow:
+      0 3px 5px 0 rgba(0, 0, 0, 0.15),
+      inset -3px -3px 5px 0 rgba(0, 0, 0, 0.44),
+      inset 3px 3px 5px 0 rgba(255, 255, 255, 0.33);
+    z-index: 1;
+    overflow: hidden;
+  }
+  .menu-btn:hover .btn-inside {
+    background: var(--color-neutral-450);
+  }
+
+  .menu-btn .btn-shimmer {
+    position: absolute;
+    width: 400%;
+    height: 400%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(0deg);
+    /* 중심 65% 50% → conic peak (90°, 오른쪽) 와 동일 위치 → 둘이 같은 자리에서 함께 회전. */
+    background: radial-gradient(
+      45% 45% at 65% 50%,
+      rgba(255, 255, 255, 0.45) 0%,
+      rgba(255, 255, 255, 0.15) 40%,
+      transparent 70%
+    );
+    animation: menu-btn-spin 4s linear infinite;
+    opacity: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* .is-active — 회전 효과 + inner panel blue gradient */
+  .menu-btn.is-active::before {
+    opacity: 1;
+  }
+  .menu-btn.is-active .btn-shimmer {
+    opacity: 1;
+  }
+  .menu-btn.is-active .btn-inside {
+    background: linear-gradient(180deg, #42B8FF 10%, #0D8AE0 90%);
+    box-shadow: 12px -6px 24px 0 rgba(255, 255, 255, 0.5);
+    border: none;
+  }
+
+  .menu-btn .btn-text {
+    position: relative;
+    /* 축소 화면에서도 획이 뭉치지 않도록 본문과 같은 한글 폰트를 사용한다. */
+    font-family: var(--font-sans);
+    font-weight: 600;
+    color: #FFFFFF;
+    font-size: 42px;
+    line-height: 42px;
+    z-index: 2;
+  }
+
+  .menu-btn:focus,
+  .menu-btn:focus-visible {
+    outline: none;
+  }
+
+  /* dropdown footer button — 전체 삭제 (cancel) */
+  .dropdown-btn-cancel {
+    display: flex;
+    height: 40px;
+    padding: 0 8px;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    flex: 1 0 0%;
+    max-width: 159px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.24);
+    background: rgba(255, 255, 255, 0.08);
+  }
+  .dropdown-btn-cancel:hover {
+    border-color: rgba(13, 138, 224, 0.40);
+    background: rgba(255, 255, 255, 0.40);
+  }
+  .dropdown-btn-cancel:disabled {
+    opacity: 0.3;
+  }
+
+  /* dropdown footer button — 선택 (confirm) */
+  .dropdown-btn-confirm {
+    display: flex;
+    height: 40px;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    flex: 1 0 0%;
+    max-width: 159px;
+    border-radius: 8px;
+    background: #0D8AE0;
+  }
+  .dropdown-btn-confirm:hover {
+    background: #42B8FF;
+    box-shadow:
+      0 2px 2px 0 rgba(0, 0, 0, 0.04),
+      0 4px 8px 0 rgba(0, 0, 0, 0.08);
+  }
+  .dropdown-btn-confirm:disabled {
+    opacity: 0.3;
+  }
+
+  /* "전체 지도로 돌아가기" button — 텍스트 색 / text-stroke (normal / hover) */
+  .pump-back-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: #FFF;
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: rgba(0, 26, 56, 0.50);
+    font-family: Roboto;
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 28px;
+  }
+  .pump-back-btn:hover .pump-back-label {
+    color: rgba(255, 255, 255, 0.90);
+    -webkit-text-stroke-color: rgba(0, 26, 56, 0.20);
+  }
+
+  /* 재난 예·경보 메뉴 button — normal / hover / selected
+     bg 는 ::before pseudo-element 로 분리해 mix-blend-mode 가 자식 (체크박스/텍스트) 에 영향 안 주도록.
+     isolation 사용 X → ::before mix-blend-mode 가 DisasterPanel bg 와 정상 blend */
+  .disaster-menu-btn {
+    position: relative;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    transition:
+      border-color 0.2s,
+      box-shadow 0.2s;
+  }
+  .disaster-menu-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    background: rgba(120, 120, 128, 0.16);
+    mix-blend-mode: plus-darker;
+    z-index: 0;
+    transition: mix-blend-mode 0.2s;
+  }
+  /* 자식 (체크박스 + 텍스트) 가 ::before 위 표시되도록 */
+  .disaster-menu-btn > * {
+    position: relative;
+    z-index: 1;
+  }
+  .disaster-menu-btn:hover::before {
+    mix-blend-mode: plus-lighter;
+  }
+  .disaster-menu-btn.is-selected {
+    border-color: #1EA7FF;
+    box-shadow:
+      0 0 20px 0 rgba(30, 167, 255, 0.20),
+      0 6px 12px 0 rgba(0, 0, 0, 0.12);
+  }
+  .disaster-menu-btn.is-selected::before {
+    mix-blend-mode: plus-lighter !important;
+  }
+
+  /* 재난 예·경보 footer 송출 button — normal / hover / disabled */
+  .disaster-send-btn {
+    background: #6D7CFF;
+    transition:
+      background 0.15s,
+      box-shadow 0.15s;
+  }
+  .disaster-send-btn:not(:disabled):hover {
+    background: #919CFF;
+    box-shadow:
+      0 2px 2px 0 rgba(0, 0, 0, 0.04),
+      0 4px 8px 0 rgba(0, 0, 0, 0.08);
+  }
+  .disaster-send-btn:disabled {
+    opacity: 0.3;
+    background: #6D7CFF;
+    box-shadow: none;
+  }
+
+  /* 재난 예·경보 텍스트 입력 영역 — textarea
+     normal: border Neutral-400 / focus: border Primary-dark, bg Neutral-800
+     placeholder: Neutral-300 / typing: Neutral-50, B4 (15/500/16) */
+  .disaster-textarea {
+    border-radius: 12px;
+    border: 1px solid var(--color-neutral-450);
+    background: #001A38;
+    color: #F4F8FB;
+    font-family: Roboto;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 16px;
+    transition: border-color 0.15s;
+  }
+  .disaster-textarea:focus {
+    border-color: #0D8AE0;
+    outline: none;
+  }
+  .disaster-textarea::placeholder {
+    color: #7F97AF;
+  }
+
+  /* 재난 예·경보 메뉴 button 텍스트 — normal / hover / selected 색상 */
+  .disaster-menu-btn-text {
+    color: #B8C8D6; /* normal — Neutral-200 */
+    transition: color 0.2s;
+  }
+  .disaster-menu-btn:hover .disaster-menu-btn-text {
+    color: #F4F8FB; /* hover — Neutral-50 */
+  }
+  .disaster-menu-btn.is-selected .disaster-menu-btn-text {
+    color: #FFF;
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: rgba(13, 138, 224, 0.50);
+  }
+
+  /* 자동 음성 통보 컴포저 — 초기화 / 미리듣기 ghost 버튼 */
+  .voice-ghost-btn {
+    height: 34px;
+    padding: 0 14px;
+    border-radius: 8px;
+    border: 1px solid var(--color-neutral-450);
+    background: rgba(255, 255, 255, 0.04);
+    color: #D7E2EC;
+    font-family: Pretendard, Roboto, sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1;
+    transition:
+      border-color 0.15s,
+      background 0.15s;
+  }
+  .voice-ghost-btn:hover {
+    border-color: #0D8AE0;
+    background: rgba(13, 138, 224, 0.10);
+    color: #F4F8FB;
+  }
+
+  /* 제목 input — textarea 와 동일 톤 */
+  .voice-input {
+    height: 44px;
+    padding: 0 16px;
+    border-radius: 10px;
+    border: 1px solid var(--color-neutral-450);
+    background: #001A38;
+    color: #FFF;
+    font-family: Roboto;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1;
+    transition: border-color 0.15s;
+  }
+  .voice-input:focus {
+    border-color: #0D8AE0;
+    outline: none;
+  }
+  .voice-input::placeholder {
+    color: #7F97AF;
+  }
+
+  /* 로그인/회원가입 모달 입력 박스 (아이콘 + input 컨테이너)
+     상태: default #1B4671 / hover Neutral-300 / focus Primary / error Accents-Red */
+  .login-field {
+    display: flex;
+    height: 40px;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--color-neutral-450);
+    background: #001A38;
+    transition: border-color 0.15s;
+  }
+  /* 회원가입 입력 — 부서 셀렉트와 톤 맞춤 (bg Neutral-400 + 밝은 border). 뒤 hover/focus/error 가 override */
+  .login-field.login-field--filled {
+    border-color: rgba(127, 151, 175, 0.5);
+    background: var(--color-neutral-450);
+  }
+  .login-field:hover {
+    border-color: #7F97AF;
+  }
+  .login-field:focus-within {
+    border-color: #1EA7FF;
+  }
+  .login-field.login-field--error {
+    border-color: #FF4245;
+  }
+  /* 내부 input — 투명. 입력 글씨 #FFF, placeholder Neutral-300. Pretendard 15/500 +0.6px */
+  .login-input {
+    flex: 1 0 0;
+    min-width: 0;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #FFF;
+    font-family: Pretendard;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: normal;
+    letter-spacing: 0.6px;
+  }
+  .login-input::placeholder {
+    color: #7F97AF;
+  }
+
+  /* 로그인/회원가입 모달 버튼 — primary(파랑) / outline. hover 색은 앱 컨벤션 (⚠️ 스펙 주면 교체) */
+  .login-btn-primary {
+    background: #0D8AE0;
+    transition: background 0.15s;
+  }
+  .login-btn-primary:hover {
+    background: #42B8FF;
+  }
+  .login-btn-outline {
+    border: 1px solid rgba(255, 255, 255, 0.24);
+    background: rgba(255, 255, 255, 0.08);
+    transition:
+      background 0.15s,
+      border-color 0.15s;
+  }
+  .login-btn-outline:hover {
+    border-color: rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.16);
+  }
+
+  /* 회원가입 부서 셀렉트 트리거 — 상태: default / hover / active(열림) / disabled(opacity .4) */
+  .dept-select {
+    border: 1px solid rgba(127, 151, 175, 0.5);
+    background: var(--color-neutral-450);
+    transition: border-color 0.15s;
+  }
+  .dept-select:hover {
+    border-color: #7F97AF;
+  }
+  .dept-select.dept-select--open {
+    border-color: #1EA7FF;
+  }
+  /* disabled — 박스: border Neutral-500 + bg Neutral-800 / 폰트만 opacity 0.4 */
+  .dept-select:disabled {
+    border-color: #003060;
+    background: #001A38;
+  }
+  .dept-select:disabled .dept-value {
+    opacity: 0.4;
+  }
+
+  /* 회원가입 부서 드롭다운 옵션 — hover 시 radius 4 + Neutral-400 bg */
+  .dept-option {
+    border-radius: 4px;
+  }
+  .dept-option:hover {
+    background: var(--color-neutral-450);
+  }
+
+  /* 메시지 템플릿 칩 — padding 6/4/6/8, radius 5, Primary 30% border + 20% bg, 텍스트 Neutral-50 */
+  .voice-template-chip {
+    display: flex;
+    padding: 6px 4px 6px 8px;
+    justify-content: center;
+    align-items: center;
+    gap: 2px;
+    border-radius: 5px;
+    border: 1px solid rgba(30, 167, 255, 0.30);
+    background: rgba(30, 167, 255, 0.20);
+    color: #E8E8ED;
+    font-family: Pretendard, Roboto, sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1;
+    cursor: pointer;
+    transition:
+      border-color 0.15s,
+      background 0.15s;
+  }
+  .voice-template-chip:hover {
+    border-color: rgba(30, 167, 255, 0.50);
+    background: rgba(30, 167, 255, 0.30);
+  }
+
+  /* 메시지 유형 칩 ⋮ 옵션 메뉴 — 클릭 시 수정/삭제 리스트 (W 68, radius 4) */
+  .voice-chip-menu {
+    display: flex;
+    width: 68px;
+    flex-direction: column;
+    align-items: flex-start;
+    overflow: hidden;
+    border-radius: 4px;
+    border: 1px solid var(--color-neutral-450);
+    background: var(--color-neutral-900);
+  }
+  .voice-chip-menu-item {
+    display: flex;
+    width: 68px;
+    height: 32px;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    border: 1px solid transparent;
+    color: #FFF;
+    font-family: Pretendard, Roboto, sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1;
+  }
+  .voice-chip-menu-item:hover {
+    border-color: var(--color-neutral-450);
+    background: var(--color-neutral-600);
+  }
+
+  /* 템플릿 추가 (+) 버튼 — padding 4, radius 5, Primary border + Primary-dark bg */
+  .voice-template-add {
+    display: flex;
+    padding: 4px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+    border: 1px solid #1EA7FF;
+    background: #0D8AE0;
+    transition: background 0.15s;
+  }
+  .voice-template-add:hover {
+    background: #1EA7FF;
+  }
+
+  /* 방송 설정 셀렉트 박스 (커스텀 드롭다운) — padding 6/4/6/12, radius 6, Neutral-400 bg */
+  .voice-select {
+    display: flex;
+    padding: 6px 4px 6px 12px;
+    align-items: center;
+    gap: 4px;
+    flex: 1 0 0;
+    min-width: 0;
+    border-radius: 6px;
+    border: 1px solid rgba(127, 151, 175, 0.50);
+    background: #1B4671;
+    cursor: pointer;
+    transition: border-color 0.15s;
+  }
+  .voice-select:hover {
+    border-color: rgba(127, 151, 175, 0.80);
+  }
+  /* 옵션 팝업 — ⚠️ 스타일 placeholder (스펙 확정 후 교체).
+     방송설정이 컴포저 하단이라 위로 열림 (아래로 열면 overflow 클리핑). */
+  .voice-select-popup {
+    position: absolute;
+    bottom: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    z-index: 50;
+    max-height: 220px;
+    overflow-y: auto;
+    padding: 4px;
+    border-radius: 6px;
+    border: 1px solid rgba(127, 151, 175, 0.50);
+    background: #002A54;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+  }
+  .voice-select-option {
+    padding: 8px 10px;
+    border-radius: 4px;
+    color: #DCE6EE;
+    font-family: Pretendard, Roboto, sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .voice-select-option:hover {
+    background: #1B4671;
+    color: #fff;
+  }
+
+  /* 초기화 확인 모달 푸터 버튼 — 120×40 */
+  .voice-modal-btn {
+    display: flex;
+    width: 120px;
+    height: 40px;
+    padding: 3px 8px 0px 8px;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    border-radius: 8px;
+    color: #fff;
+    font-family: Roboto;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1;
+    cursor: pointer;
+    transition:
+      background 0.15s,
+      border-color 0.15s;
+  }
+  .voice-modal-btn-cancel {
+    border: 1px solid rgba(255, 255, 255, 0.24);
+    background: rgba(255, 255, 255, 0.08);
+  }
+  .voice-modal-btn-cancel:hover {
+    border-color: rgba(255, 255, 255, 0.40);
+    background: rgba(255, 255, 255, 0.16);
+  }
+  .voice-modal-btn-reset {
+    border: 1px solid transparent;
+    background: #ff4245;
+  }
+  .voice-modal-btn-reset:hover {
+    background: #FF6A6C;
+  }
+  .voice-modal-btn-confirm {
+    border: 1px solid transparent;
+    background: #0d8ae0;
+  }
+  .voice-modal-btn-confirm:hover {
+    background: #42b8ff;
+  }
+
+  /* 템플릿 추가 모달 — 제목 input / 내용 textarea (padding 10/12, radius 6, Neutral-800 bg) */
+  .template-add-input,
+  .template-add-textarea {
+    align-self: stretch;
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 6px;
+    border: 1px solid #1b4671;
+    background: #001a38;
+    color: #fff;
+    font-family: Pretendard, Roboto, sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: 0.6px;
+    transition: border-color 0.15s;
+  }
+  .template-add-textarea {
+    height: 200px;
+    line-height: 150%;
+    resize: none;
+  }
+  .template-add-input:focus,
+  .template-add-textarea:focus {
+    border-color: #0d8ae0;
+    outline: none;
+  }
+  .template-add-input::placeholder,
+  .template-add-textarea::placeholder {
+    color: #7f97af;
+    font-weight: 500;
+    letter-spacing: 0.6px;
+  }
+
+  /* 컬러 피커 footer button — 취소 (border + 반투명 white bg) / 적용 (Primary-dark)
+     hover / disabled state 포함 */
+  .color-picker-btn-cancel {
+    border: 1px solid rgba(255, 255, 255, 0.24);
+    background: rgba(255, 255, 255, 0.08);
+  }
+  .color-picker-btn-cancel:hover {
+    border-color: rgba(13, 138, 224, 0.40);
+    background: rgba(255, 255, 255, 0.40);
+  }
+  .color-picker-btn-cancel:disabled {
+    opacity: 0.3;
+  }
+
+  .color-picker-btn-confirm {
+    background: #0D8AE0;
+  }
+  .color-picker-btn-confirm:hover {
+    background: #42B8FF;
+    box-shadow:
+      0 2px 2px 0 rgba(0, 0, 0, 0.04),
+      0 4px 8px 0 rgba(0, 0, 0, 0.08);
+  }
+  .color-picker-btn-confirm:disabled {
+    opacity: 0.3;
+  }
+
+  /* react-colorful 의 hue bar H override — 사용자 시안 H 12 */
+  .react-colorful__hue {
+    height: 12px !important;
+  }
+  .react-colorful__hue .react-colorful__pointer {
+    width: 16px;
+    height: 16px;
+  }
+
+  /* react-colorful 분리 — saturation 영역만 또는 hue bar 만 표시 */
+  .colorful-saturation-only .react-colorful__hue,
+  .colorful-saturation-only .react-colorful__alpha {
+    display: none;
+  }
+  .colorful-saturation-only .react-colorful {
+    height: 100%;
+  }
+  .colorful-hue-only .react-colorful__saturation,
+  .colorful-hue-only .react-colorful__alpha {
+    display: none;
+  }
+  .colorful-hue-only .react-colorful {
+    height: 12px;
+  }
+  .colorful-hue-only .react-colorful__hue {
+    border-radius: 20px !important;
+  }
+  /* react-colorful default 가 inner element 로 gradient 그려서 안 element 도 radius */
+  .colorful-hue-only .react-colorful__hue > * {
+    border-radius: 20px !important;
+  }
+
+  /* 펌프 핸들 회전 — red variant 만 적용
+     사이클 20초 안에 2번 (10초마다 1번): 2초 동안 180도 시계방향 회전 + 8초 정지 → 다음 회전
+     keyframe 끝 360 = 0 시각 동일 → iteration 시 visual jump 없음 */
+  @keyframes pump-handle-spin {
+    0% { transform: rotate(0deg); }
+    10% { transform: rotate(180deg); }
+    50% { transform: rotate(180deg); }
+    60% { transform: rotate(360deg); }
+    100% { transform: rotate(360deg); }
+  }
+  .pump-handle-red {
+    animation: pump-handle-spin 20s linear infinite;
+    transform-origin: center;
+  }
+
+  /* 배수펌프장 구역 polygon — hover 강조 (focus effect).
+     전략: 1) 다른 구역들은 dim (.pump-region-dimmed) → 시각적 노이즈 제거
+           2) hover 구역은 translate-up + scale + 강한 drop-shadow (.pump-region-hovered)
+     transform-box / transform-origin 은 hover 시에만 적용 → 기본 상태 SVG 좌표계 영향 X. */
+  .pump-region-path {
+    /* 클릭 비활성 (detail 진입은 패널 row 에서) — hover 강조만. */
+    cursor: default;
+    /* 기본 상태 — 평면 polygon (입체감 없음).
+       hover 시 .pump-region-hovered 가 extruded 3D 효과 (다단계 shadow + translateY) 적용. */
+    transition:
+      filter 0.25s cubic-bezier(0.2, 0.7, 0.3, 1),
+      stroke-width 0.25s ease,
+      fill-opacity 0.25s ease,
+      stroke-opacity 0.25s ease,
+      transform 0.25s cubic-bezier(0.2, 0.7, 0.3, 1);
+  }
+  /* 우측 패널의 펌프장 row hover — 클릭 가능함을 시각적으로 표시 (배경 살짝 밝게).
+     각 cell (NarrowCell/StatusCell) 이 inline style 로 #002247 을 갖고 있어 !important 필요. */
+  .pump-station-row > * {
+    transition: background 0.15s ease;
+  }
+  .pump-station-row:hover > * {
+    background: #003a6b !important;
+  }
+  /* hover 한 polygon 에만 3D 일어서는 효과 (rotateX) 적용하기 위해 SVG 오버레이에 perspective 설정. */
+  .leaflet-overlay-pane svg {
+    perspective: 1200px;
+  }
+  .pump-region-hovered {
+    transform-box: fill-box;
+    transform-origin: center bottom;
+    /* polygon 이 뒤로 살짝 일어서듯 (rotateX -25°) + 위로 lift + 살짝 확대.
+       땅에 누워있던 평면이 hover 시에만 일어서서 보이는 효과. */
+    transform: rotateX(-25deg) translateY(-10px) scale(1.03);
+    /* extrusion 측면 (다단계 0 blur shadow) + ground shadow.
+       polygon 이 기울면서 shadow 도 같이 기울어 진짜 3D 기둥처럼 보임. */
+    filter:
+      drop-shadow(0 1px 0 rgba(0, 0, 0, 0.32))
+      drop-shadow(0 2px 0 rgba(0, 0, 0, 0.3))
+      drop-shadow(0 3px 0 rgba(0, 0, 0, 0.28))
+      drop-shadow(0 4px 0 rgba(0, 0, 0, 0.26))
+      drop-shadow(0 5px 0 rgba(0, 0, 0, 0.24))
+      drop-shadow(0 6px 0 rgba(0, 0, 0, 0.22))
+      drop-shadow(0 7px 0 rgba(0, 0, 0, 0.2))
+      drop-shadow(0 8px 0 rgba(0, 0, 0, 0.18))
+      drop-shadow(0 10px 0 rgba(0, 0, 0, 0.14))
+      drop-shadow(0 12px 0 rgba(0, 0, 0, 0.1))
+      drop-shadow(0 16px 16px rgba(0, 0, 0, 0.55));
+  }
+
+  /* 배수펌프장 마커 — hover 된 region 안에 있을 때 scale 1.5 + halo.
+     easing 부드러운 ease-out (튀지 않음), duration 길게 (0.6s) 해서 천천히 커지는 느낌. */
+  .pump-marker-content {
+    transform-origin: center;
+    transition:
+      transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+      filter 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  .pump-marker-emphasized .pump-marker-content {
+    transform: scale(1.5);
+    filter:
+      drop-shadow(0 0 4px rgba(255, 255, 255, 0.6))
+      drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+  }
+
+  /* 라벨 emphasis — hover 된 region 안 마커의 라벨이 같이 강조됨.
+     scale-up + drop-shadow. transform-origin: top center 이어야 라벨이 마커 아래로 자라남
+     (라벨은 마커 끝에서 6px 아래 시작 → top 을 기준으로 확대). */
+  .marker-label-content {
+    transform-origin: top center;
+    transition:
+      transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+      filter 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  .marker-label-emphasized .marker-label-content {
+    transform: scale(1.15);
+    filter:
+      drop-shadow(0 0 4px rgba(255, 255, 255, 0.5))
+      drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
+  }
+
+  /* 이벤트 결과 리스트 row — W 450, radius 10, border + bg, hover Neutral-400 (var(--color-neutral-450)) */
+  .event-result-row {
+    display: flex;
+    width: 450px;
+    padding: 0 16px;
+    align-items: center;
+    border-radius: 10px;
+    border: 1px solid #003060;
+    background: #002A54;
+  }
+  .event-result-row:hover {
+    border-color: var(--color-neutral-450);
+    background: var(--color-neutral-450);
+  }
+
+  /* 이벤트 결과 row — 펼친 상태 (col, padding 0 16 8 16, gap 6) */
+  .event-result-row-expanded {
+    display: flex;
+    width: 450px;
+    padding: 0 16px 8px 16px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 6px;
+    border-radius: 10px;
+    border: 1px solid #003060;
+    background: #002A54;
+  }
+  .event-result-row-expanded:hover {
+    border-color: var(--color-neutral-450);
+    background: var(--color-neutral-450);
+  }
+
+  /* row active (선택) 상태 — visual 2px solid Primary-light, 그러나 border 두께 변경 시
+     content 가 1px jitter 발생하므로 border 1px 유지하고 box-shadow inset 으로 2px 그림
+     (= visual 동일, layout 안정) */
+  .event-result-row.is-active,
+  .event-result-row.is-active:hover,
+  .event-result-row-expanded.is-active,
+  .event-result-row-expanded.is-active:hover {
+    border-color: #42B8FF;
+    box-shadow: inset 0 0 0 2px #42B8FF;
+  }
+
+  /* row new (SSE 실시간 수신) — 확인 전까지 빨간 테두리. 클릭(활성) 시 is-active 로 대체.
+     active 와 동일하게 border 1px + inset box-shadow 2px (layout jitter 방지) */
+  .event-result-row.is-new,
+  .event-result-row.is-new:hover,
+  .event-result-row-expanded.is-new,
+  .event-result-row-expanded.is-new:hover {
+    border-color: #FF4245;
+    box-shadow: inset 0 0 0 2px #FF4245;
+  }
+
+  /* 이벤트 검색 form — 조회 button (H 48, radius 99) */
+  .event-search-btn {
+    display: flex;
+    height: 48px;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    align-self: stretch;
+    border-radius: 99px;
+    background: #0D8AE0;
+  }
+  .event-search-btn:hover {
+    background: #42B8FF;
+  }
+
+  /* 이벤트 panel 우측 close button (28×62) */
+  .event-panel-close {
+    display: flex;
+    width: 28px;
+    height: 62px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0 8px 8px 0;
+    border-top: 1px solid var(--color-neutral-450);
+    border-right: 1px solid var(--color-neutral-450);
+    border-bottom: 1px solid var(--color-neutral-450);
+    background: #001A38;
+    color: #B8C8D6;
+  }
+  .event-panel-close:hover {
+    border-top-color: #0D8AE0;
+    border-right-color: #0D8AE0;
+    border-bottom-color: #0D8AE0;
+    background: #003060;
+    color: #42B8FF;
+  }
+
+  /* 지도 기능 button (44×44, flex col, border 1px).
+     button 의 color CSS 가 SVG fill/stroke (currentColor) 와 동기 */
+  .map-btn {
+    display: flex;
+    width: 44px;
+    height: 44px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #B8C8D6;
+    background: #FFF;
+    color: #001229;
+  }
+  .map-btn:hover {
+    border-color: #42B8FF;
+    color: #1EA7FF;
+  }
+  .map-btn:active {
+    border-color: #0D8AE0;
+    background: #DCE6EE;
+    color: #0D8AE0;
+  }
+  .map-btn.is-active {
+    border-color: #42B8FF;
+    background: #0D8AE0;
+    color: #FFF;
+  }
+  .map-btn:disabled {
+    opacity: 0.3;
+  }
+
+  /* 급경사지 서브탭 / 요약 바 등장 — 3단계.
+     1) 본문이 줄면서 헤더 자리(158)가 열리고
+     2) 그 뒤 서브탭·요약 바가 내려오며 나타나고
+     3) 마지막으로 우측 패널 내용이 바뀐다 (.panel-cross-fade-in.is-delayed). */
+  /* 168 = 본문 높이 차이(840−672) 와 동일 — 자리가 열리고 닫히는 양이 정확히 상쇄돼
+     본문 아래쪽이 제자리에 고정된다. (헤더 내용 158 + 아래 여백 10) */
+  @keyframes slope-header-open {
+    from {
+      height: 0;
+    }
+    to {
+      height: 168px;
+    }
+  }
+  @keyframes slope-header-enter {
+    from {
+      transform: translateY(-10px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  /* ── 관리자: CCTV 시설물 분류 (/admin/cctv) ────────────────────
+     운영 화면(ScaledFrame 1920 고정) 과 달리 PC 브라우저 크기를 그대로 쓴다. */
+  .admin-cctv {
+    display: flex;
+    flex-direction: column;
+    /* ScaledFrame(1920×1080) 를 채운다. */
+    width: 100%;
+    height: 100%;
+    background: var(--color-neutral-900, #001229);
+    color: #fff;
+    font-family: Roboto, sans-serif;
+  }
+  /* CCTV 관리 — 화면 안 모든 스크롤바를 대시보드 얇은 스타일로 (트랙 투명 / thumb white 25%). */
+  .admin-cctv,
+  .admin-cctv * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
+  }
+  .admin-cctv ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .admin-cctv ::-webkit-scrollbar-track,
+  .admin-cctv ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+  .admin-cctv ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 8px;
+  }
+  .admin-cctv-head {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    padding: 20px 28px;
+    border-bottom: 1px solid var(--color-neutral-450);
+  }
+  .admin-cctv-head h1 {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .admin-cctv-count {
+    flex-shrink: 0;
+    white-space: nowrap;
+    color: var(--color-neutral-200, #b8c8d6);
+    font-size: 17px;
+  }
+  .admin-cctv-tabs {
+    display: flex;
+    gap: 10px;
+    padding: 16px 28px;
+    border-bottom: 1px solid var(--color-neutral-450);
+  }
+  .admin-cctv-tab {
+    height: 52px;
+    padding: 1px 36px 0; /* 한글이 위로 떠 보여 1px 내림 */
+    border-radius: 10px;
+    border: 1px solid var(--color-neutral-450);
+    background: var(--color-neutral-800, #001a38);
+    color: var(--color-neutral-200, #b8c8d6);
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 1;
+  }
+  .admin-cctv-tab:hover {
+    background: rgba(120, 120, 128, 0.16);
+  }
+  .admin-cctv-tab.is-on {
+    border-color: #1ea7ff;
+    background: #1ea7ff;
+    color: #001229;
+    font-weight: 500;
+  }
+  .admin-cctv-body {
+    display: flex;
+    flex: 1 0 0;
+    min-height: 0;
+  }
+  /* 좌 — 목록 */
+  .admin-cctv-list {
+    display: flex;
+    width: 620px;
+    flex-direction: column;
+    flex-shrink: 0;
+    border-right: 1px solid var(--color-neutral-450);
+    min-height: 0;
+  }
+  .admin-cctv-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--color-neutral-450);
+  }
+  /* 분류 필터 — 급경사지 필터 레이어(.slope-filter-*) 를 그대로 쓴다. */
+  .admin-cctv-select {
+    position: relative;
+    width: 200px;
+    flex-shrink: 0;
+  }
+  /* 열린 레이어는 버튼과 같은 폭 (급경사지의 auto 폭 규칙을 여기선 덮는다). */
+  .admin-cctv-select .slope-filter-layer,
+  .admin-cctv-select .slope-filter-layer.is-auto {
+    top: calc(100% + 6px);
+    width: 100%;
+    min-width: 100%;
+    max-width: none;
+  }
+  .admin-cctv-select .slope-filter-options {
+    width: 100%;
+  }
+  .admin-cctv-select .slope-filter-option {
+    width: 100%;
+    font-size: 16px;
+  }
+  .admin-cctv-select-btn {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    gap: 4px;
+    height: 44px;
+    padding: 0 10px 0 16px;
+    border-radius: 8px;
+    border: 1px solid var(--color-neutral-450);
+    background: var(--color-neutral-800, #001a38);
+    color: #fff;
+    font-size: 16px;
+    white-space: nowrap;
+  }
+  .admin-cctv-filters input[type='text'],
+  .admin-cctv-filters input:not([type]),
+  .admin-cctv-filters select {
+    height: 44px;
+    padding: 0 14px;
+    border-radius: 8px;
+    border: 1px solid var(--color-neutral-450);
+    background: var(--color-neutral-800, #001a38);
+    color: #fff;
+    font-size: 16px;
+  }
+  .admin-cctv-filters input:not([type='checkbox']) {
+    flex: 1 0 160px;
+  }
+  .admin-cctv-filters label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--color-neutral-200, #b8c8d6);
+    font-size: 16px;
+    white-space: nowrap;
+  }
+  .admin-cctv-filters input[type='checkbox'] {
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    accent-color: #1ea7ff;
+    cursor: pointer;
+  }
+  /* 분류 색 범례 — 목록 점과 같은 색. */
+  .admin-cctv-legend-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 16px;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--color-neutral-450);
+    color: var(--color-neutral-200, #b8c8d6);
+    font-size: 14px;
+    line-height: 1;
+  }
+  .admin-cctv-legend-bar span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+  }
+  .admin-cctv-legend-bar i {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  /* 목록 행의 분류 표시 — 색 점만. */
+  .admin-cctv-dots {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-shrink: 0;
+  }
+  .admin-cctv-dots i {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .admin-cctv-rows {
+    flex: 1 0 0;
+    overflow-y: auto;
+    min-height: 0;
+  }
+  .admin-cctv-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 14px 20px;
+    text-align: left;
+    border-bottom: 1px solid rgba(175, 205, 238, 0.12);
+  }
+  /* 시설물 탭 목록 행 — 이름 + 해제 버튼. */
+  div.admin-cctv-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .admin-cctv-row-main {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 2px 12px;
+    flex: 1 0 0;
+    min-width: 0;
+    text-align: left;
+  }
+  .admin-cctv-unassign {
+    flex-shrink: 0;
+    width: 62px;
+    height: 34px;
+    padding: 1px 0 0;
+    border-radius: 6px;
+    border: 1px solid #ff453a;
+    color: #ff453a;
+    font-size: 17px;
+    line-height: 1;
+  }
+  .admin-cctv-unassign:hover {
+    background: rgba(255, 69, 58, 0.14);
+  }
+  .admin-cctv-unassign:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .admin-cctv-row:hover {
+    background: rgba(120, 120, 128, 0.16);
+  }
+  .admin-cctv-row.is-active {
+    background: var(--color-neutral-450);
+  }
+  .admin-cctv-row-name {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 18px;
+    line-height: 22px;
+  }
+  .admin-cctv-row-id {
+    color: var(--color-neutral-300, #7f97af);
+    font-size: 17px;
+    line-height: 22px;
+  }
+  .admin-cctv-badges {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .admin-cctv-badge {
+    padding: 2px 8px;
+    border-radius: 100px;
+    background: #1ea7ff;
+    color: #001229;
+    font-size: 13px;
+    font-weight: 500;
+  }
+  /* 하위 분류 — 상위와 구분되게 테두리형. */
+  .admin-cctv-badge.is-sub {
+    background: transparent;
+    border: 1px solid #1ea7ff;
+    color: #1ea7ff;
+  }
+  /* 시설물 탭 — 좌측 시설물 메뉴 */
+  .admin-cctv-side {
+    display: flex;
+    width: 320px;
+    flex-shrink: 0;
+    flex-direction: column;
+    gap: 8px;
+    padding: 20px 16px;
+    border-right: 1px solid var(--color-neutral-450);
+    overflow-y: auto;
+  }
+  .admin-cctv-side-item {
+    height: 56px;
+    padding: 1px 20px 0; /* 한글이 위로 떠 보여 1px 내림 */
+    border-radius: 10px;
+    color: var(--color-neutral-200, #b8c8d6);
+    font-size: 18px;
+    line-height: 1;
+    text-align: left;
+  }
+  .admin-cctv-side-item:hover {
+    background: rgba(120, 120, 128, 0.16);
+  }
+  .admin-cctv-side-item.is-on {
+    background: var(--color-neutral-450);
+    color: #fff;
+    font-weight: 500;
+  }
+  /* 시설물 탭 — 본문 상단 하위 탭 */
+  .admin-cctv-subtabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--color-neutral-450);
+  }
+  .admin-cctv-subtab {
+    height: 46px;
+    padding: 0 24px;
+    border-radius: 8px 8px 0 0;
+    color: var(--color-neutral-200, #b8c8d6);
+    font-size: 18px;
+    line-height: 1;
+  }
+  .admin-cctv-subtab:hover {
+    background: rgba(120, 120, 128, 0.16);
+  }
+  .admin-cctv-subtab.is-on {
+    background: var(--color-neutral-450);
+    color: #fff;
+    font-weight: 500;
+  }
+  /* 시설물 탭 — 지도·플레이어 옆에 붙는 CCTV 목록 */
+  .admin-cctv-facility-main {
+    display: flex;
+    align-items: stretch;
+    gap: 16px;
+  }
+  .admin-cctv-facility-media {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    flex-shrink: 0;
+  }
+  .admin-cctv-cctvlist {
+    display: flex;
+    /* 지도·플레이어 옆 남는 폭을 전부 쓴다. */
+    flex: 1 1 0;
+    min-width: 0;
+    flex-direction: column;
+    border: 1px solid var(--color-neutral-450);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .admin-cctv-cctvlist-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--color-neutral-450);
+    color: var(--color-neutral-200, #b8c8d6);
+    font-size: 16px;
+    line-height: 1;
+  }
+  .admin-cctv-cctvlist-head input {
+    flex: 1 0 0;
+    min-width: 0;
+    height: 40px;
+    padding: 0 14px;
+    border-radius: 6px;
+    border: 1px solid var(--color-neutral-450);
+    background: var(--color-neutral-800, #001a38);
+    color: #fff;
+    font-size: 17px;
+  }
+  /* 건수 자리 고정 — 0건 / 2,407건 처럼 자릿수가 달라져도 검색창 폭이 흔들리지 않게.
+     'nnnn / nnnn (건)' 기준. */
+  .admin-cctv-cctvlist-head .admin-cctv-count {
+    /* 최소 폭만 잡는다 — 일괄 등록 후보는 전체 건수(4자리)라 고정 폭이면 옆 버튼을 덮었다. */
+    min-width: 160px;
+    flex-shrink: 0;
+    text-align: right;
+    white-space: nowrap;
+  }
+  /* 하위 시설물 선택 시 — 'nn / nn (건)' 기준. */
+  .admin-cctv-cctvlist-head .admin-cctv-count.is-compact {
+    min-width: 104px;
+  }
+  /* 시설물 탭 — 일괄 등록 모드 */
+  .admin-cctv-mode-btn {
+    flex-shrink: 0;
+    height: 42px;
+    padding: 0 24px;
+    border-radius: 8px;
+    border: 1px solid var(--color-neutral-450);
+    color: var(--color-neutral-200, #b8c8d6);
+    font-size: 17px;
+    font-weight: 500;
+    line-height: 1;
+  }
+  .admin-cctv-mode-btn:hover {
+    background: rgba(120, 120, 128, 0.16);
+  }
+  .admin-cctv-mode-btn.is-on {
+    border-color: #1ea7ff;
+    background: #1ea7ff;
+    color: #001229;
+    font-weight: 500;
+  }
+  /* 재해문자전광판 — 전광판 1개 ↔ CCTV 1대 연결. 목록 위 전광판 줄. */
+  .admin-cctv-boards {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--color-neutral-450);
+  }
+  .admin-cctv-boards-hint {
+    margin: 0 0 4px;
+    color: var(--color-neutral-300, #7f97af);
+    font-size: 14px;
+    line-height: 1;
+  }
+  .admin-cctv-board {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    align-items: center;
+    gap: 12px;
+    height: 40px;
+    padding: 1px 14px 0;
+    border-radius: 6px;
+    border: 1px solid var(--color-neutral-450);
+    color: #fff;
+    font-size: 16px;
+    line-height: 1;
+    text-align: left;
+  }
+  .admin-cctv-board:hover {
+    background: rgba(120, 120, 128, 0.16);
+  }
+  .admin-cctv-board.is-on {
+    border-color: #1ea7ff;
+    background: rgba(30, 167, 255, 0.16);
+  }
+  .admin-cctv-board-name {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-weight: 500;
+  }
+  .admin-cctv-board-cctv {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: var(--color-neutral-200, #b8c8d6);
+  }
+  .admin-cctv-board-cctv.is-none,
+  .admin-cctv-link-tag.is-none {
+    color: var(--color-neutral-300, #7f97af);
+  }
+  /* 목록 행 — 연결된 전광판 이름 */
+  .admin-cctv-link-tag {
+    flex-shrink: 0;
+    max-width: 180px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: #1ea7ff;
+    font-size: 15px;
+    line-height: 1;
+  }
+  .admin-cctv-link-btn {
+    width: 92px;
+  }
+  .admin-cctv-link-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .admin-cctv-register-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 14px;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--color-neutral-450);
+    color: var(--color-neutral-200, #b8c8d6);
+    font-size: 15px;
+    line-height: 1;
+  }
+  .admin-cctv-register-bar label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .admin-cctv-register-bar strong {
+    flex-shrink: 0;
+    white-space: nowrap;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+  }
+  .admin-cctv-register-bar em {
+    color: var(--color-neutral-300, #7f97af);
+    font-size: 14px;
+    font-style: normal;
+  }
+  .admin-cctv-radius-btn {
+    flex-shrink: 0;
+    white-space: nowrap;
+    height: 42px;
+    padding: 0 24px;
+    border-radius: 8px;
+    border: 1px solid var(--color-neutral-450);
+    background: transparent;
+    color: var(--color-neutral-200, #b8c8d6);
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1;
+  }
+  .admin-cctv-radius-btn:hover {
+    background: rgba(120, 120, 128, 0.16);
+  }
+  .admin-cctv-radius-btn.is-on {
+    border-color: #ff9f0a;
+    background: #ff9f0a;
+    color: #001229;
+    font-weight: 500;
+  }
+  /* 시설물 탭 목록 헤더 */
+  .admin-cctv-listhead {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--color-neutral-450);
+    background: #012043;
+    color: var(--color-neutral-200, #b8c8d6);
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1;
+  }
+  .admin-cctv-listhead input[type='checkbox'] {
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    flex-shrink: 0;
+    accent-color: #30d158;
+    cursor: pointer;
+  }
+  .admin-cctv-listhead-main {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+    flex: 1 0 0;
+    min-width: 0;
+  }
+  /* 메인 탭 목록 헤더 — 행과 같은 3열 그리드로 맞춘다. */
+  .admin-cctv-listhead.is-main {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+  }
+  /* 분류 열은 점 최대 5개 기준으로 자리를 고정해 열이 흔들리지 않게. */
+  .admin-cctv-listhead.is-main > span:nth-child(2),
+  .admin-cctv-dots {
+    width: 92px;
+  }
+  .admin-cctv-listhead.is-main > span:nth-child(3),
+  .admin-cctv-row .admin-cctv-row-id {
+    width: 64px;
+    text-align: right;
+  }
+  /* 행 오른쪽의 펼치기(+해제) 버튼 자리 — 헤더 글자가 버튼 위로 오지 않게. */
+  .admin-cctv-listhead-spacer {
+    width: 70px; /* 펼치기 버튼 */
+    flex-shrink: 0;
+  }
+  .admin-cctv-listhead-spacer.has-unassign {
+    width: 142px; /* 펼치기 + gap 10 + 해제 */
+  }
+  .admin-cctv-pick {
+    border-bottom: 1px solid rgba(175, 205, 238, 0.12);
+  }
+  .admin-cctv-pick.is-checked {
+    background: rgba(48, 209, 88, 0.12);
+  }
+  .admin-cctv-pick.is-active {
+    background: var(--color-neutral-450);
+  }
+  .admin-cctv-pick:hover {
+    background: rgba(120, 120, 128, 0.16);
+  }
+  .admin-cctv-pick.is-checked:hover {
+    background: rgba(48, 209, 88, 0.18);
+  }
+  .admin-cctv-pick-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+  }
+  .admin-cctv-pick-head input[type='checkbox'] {
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    align-self: center;
+    flex-shrink: 0;
+    accent-color: #30d158;
+    cursor: pointer;
+  }
+  .admin-cctv-pick-main {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 2px 12px;
+    flex: 1 0 0;
+    min-width: 0;
+    text-align: left;
+  }
+  /* 이름이 길어도 한 줄 — 행 높이가 들쭉날쭉하지 않게. */
+  .admin-cctv-pick-main .admin-cctv-row-name {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .admin-cctv-pick-toggle {
+    flex-shrink: 0;
+    width: 70px; /* '펼치기'/'닫기' 로 글자가 바뀌어도 열이 안 흔들리게 고정 */
+    height: 34px;
+    padding: 1px 0 0; /* 한글이 위로 떠 보여 1px 내림 */
+    border-radius: 6px;
+    border: 1px solid var(--color-neutral-450);
+    color: var(--color-neutral-200, #b8c8d6);
+    font-size: 17px;
+    line-height: 1;
+  }
+  .admin-cctv-pick-toggle:hover {
+    background: rgba(120, 120, 128, 0.16);
+  }
+  .admin-cctv-pick-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 0 20px 16px;
+    font-size: 17px;
+  }
+  .admin-cctv-pick-detail div {
+    display: flex;
+    gap: 8px;
+  }
+  .admin-cctv-pick-detail dt {
+    width: 84px;
+    flex-shrink: 0;
+    color: var(--color-neutral-300, #7f97af);
+  }
+  .admin-cctv-pick-detail dd {
+    color: #fff;
+    font-weight: 500;
+  }
+  .admin-cctv-register-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 16px;
+    border-top: 1px solid var(--color-neutral-450);
+    background: var(--color-neutral-800, #001a38);
+    color: var(--color-neutral-200, #b8c8d6);
+    font-size: 15px;
+    line-height: 1;
+  }
+  .admin-cctv-register-foot button {
+    height: 34px;
+    padding: 0 20px;
+    border-radius: 8px;
+    background: #1ea7ff;
+    color: #001229;
+    font-size: 16px;
+    font-weight: 500;
+  }
+  .admin-cctv-register-foot button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  /* 이름이 잘린 행 hover — 전체 이름 툴팁 (마커 툴팁과 같은 톤). */
+  .admin-cctv-name-tip {
+    position: fixed;
+    z-index: 6000;
+    transform: translateY(-100%);
+    max-width: 640px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid #003060;
+    background: #001a38;
+    color: #fff;
+    font-family: Roboto, system-ui, sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.2;
+    white-space: nowrap;
+    pointer-events: none;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  }
+  /* 좌측 패널 날씨 카드 — 배경 이미지 2장 + 글라스.
+     ::before 배경(패널 공통 bg 위에 날씨 이미지), ::after 글라스(블러 + 흰 베일).
+     내용은 z-index 로 그 위에 올린다. */
+  .weather-card {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .weather-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    border-radius: inherit;
+    /* 패널 공통 배경(cover)은 카드를 채우고, 날씨 이미지는 잘리지 않게 contain 으로 얹는다. */
+    background:
+      linear-gradient(transparent, transparent) center / contain no-repeat,
+      linear-gradient(transparent, transparent) center / cover no-repeat;
+    background-blend-mode: multiply, normal;
+  }
+  /* 베일 — 다른 패널 헤더와 같은 네이비 톤(#0E3E6E → #002245).
+     이미지 결은 비치되 좌측 패널 전체와 색이 맞게. */
+  .weather-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-radius: inherit;
+    background:
+      linear-gradient(180deg, rgba(0, 18, 41, 0.35) 0%, rgba(0, 18, 41, 0.15) 60%),
+      linear-gradient(
+        242deg,
+        rgba(14, 62, 110, 0.72) 14.24%,
+        rgba(0, 34, 69, 0.85) 88.49%
+      );
+  }
+  .weather-card > * {
+    position: relative;
+    z-index: 2;
+  }
+
+  /* 이력 탭 */
+  .admin-cctv-history {
+    display: flex;
+    flex: 1 0 0;
+    min-width: 0;
+    flex-direction: column;
+    gap: 12px;
+    padding: 20px 24px;
+    overflow: hidden;
+  }
+  .admin-cctv-history-head {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .admin-cctv-history-title {
+    flex-shrink: 0;
+    color: var(--color-neutral-200, #b8c8d6);
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1;
+  }
+  .admin-cctv-history-ranges {
+    display: flex;
+    gap: 8px;
+  }
+  .admin-cctv-history-search {
+    width: 100%;
+    max-width: 520px;
+    height: 42px;
+    padding: 0 14px;
+    border-radius: 8px;
+    border: 1px solid var(--color-neutral-450);
+    background: var(--color-neutral-800, #001a38);
+    color: #fff;
+    font-size: 16px;
+  }
+  .admin-cctv-history-cond {
+    color: var(--color-neutral-200, #b8c8d6);
+    font-size: 16px;
+    line-height: 1;
+    white-space: nowrap;
+  }
+  /* 페이징 */
+  .admin-cctv-pager {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 14px;
+    border-top: 1px solid var(--color-neutral-450);
+    color: var(--color-neutral-200, #b8c8d6);
+    font-size: 16px;
+    line-height: 1;
+  }
+  .admin-cctv-pager button {
+    height: 38px;
+    padding: 0 18px;
+    border-radius: 8px;
+    border: 1px solid var(--color-neutral-450);
+    color: var(--color-neutral-200, #b8c8d6);
+    font-size: 15px;
+    line-height: 1;
+  }
+  .admin-cctv-pager button:hover:not(:disabled) {
+    background: rgba(120, 120, 128, 0.16);
+  }
+  .admin-cctv-pager button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  /* 전체 이력 — 등록 / 수정 / 삭제 3파트 */
+  .admin-cctv-history-parts {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    flex: 1 0 0;
+    min-height: 0;
+  }
+  .admin-cctv-history-part {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    border-radius: 12px;
+    border: 1px solid var(--color-neutral-450);
+    background: var(--color-neutral-800, #001a38);
+    overflow: hidden;
+  }
+  .admin-cctv-history-part-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--color-neutral-450);
+    color: #fff;
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1;
+  }
+  .admin-cctv-history-part-head span {
+    color: var(--color-neutral-300, #7f97af);
+    font-size: 15px;
+    font-weight: 500;
+  }
+  /* 종류별 색 — 등록(초록) / 수정(파랑) / 삭제(빨강) */
+  .admin-cctv-history-part-head.is-NEW {
+    box-shadow: inset 4px 0 0 #30d158;
+  }
+  .admin-cctv-history-part-head.is-UP {
+    box-shadow: inset 4px 0 0 #1ea7ff;
+  }
+  .admin-cctv-history-part-head.is-DEL {
+    box-shadow: inset 4px 0 0 #ff453a;
+  }
+  .admin-cctv-history-rows {
+    flex: 1 0 0;
+    min-height: 0;
+    overflow-y: auto;
+  }
+  .admin-cctv-history-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 14px 18px;
+    border-bottom: 1px solid rgba(175, 205, 238, 0.12);
+  }
+  .admin-cctv-history-name {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: #fff;
+    font-size: 16px;
+    line-height: 20px;
+  }
+  .admin-cctv-history-meta {
+    color: var(--color-neutral-300, #7f97af);
+    font-size: 14px;
+    line-height: 1;
+  }
+  /* 종류별 리스트 */
+  .admin-cctv-history-list {
+    display: flex;
+    flex: 1 0 0;
+    min-height: 0;
+    flex-direction: column;
+    border-radius: 12px;
+    border: 1px solid var(--color-neutral-450);
+    overflow: hidden;
+  }
+  .admin-cctv-listhead.is-history {
+    display: grid;
+    grid-template-columns: 1fr 120px minmax(0, 1.2fr) 180px;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+  }
+  .admin-cctv-listhead.is-history.is-row {
+    position: static;
+    background: transparent;
+    border-bottom: 1px solid rgba(175, 205, 238, 0.12);
+    color: #fff;
+    font-weight: 400;
+    font-size: 16px;
+  }
+  /* 이력 종류 탭 — 항목 오른쪽에 건수. */
+  .admin-cctv-side-item em {
+    float: right;
+    color: var(--color-neutral-300, #7f97af);
+    font-size: 15px;
+    font-style: normal;
+  }
+  .admin-cctv-side-item.is-on em {
+    color: #fff;
+  }
+  /* CCTV 접기 손잡이 — 지도와 CCTV 그리드 경계에 붙는 세로 버튼. */
+  .cctv-collapse-handle {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    z-index: 1000;
+    width: 20px;
+    height: 76px;
+    border-radius: 8px 0 0 8px;
+    border: 1px solid var(--color-neutral-450);
+    background: var(--color-neutral-800, #001a38);
+    color: var(--color-neutral-200, #b8c8d6);
+    font-size: 18px;
+    line-height: 1;
+    transition:
+      background 0.2s,
+      color 0.2s;
+  }
+  .cctv-collapse-handle:hover {
+    background: #1b4671;
+    color: #fff;
+  }
+
+  /* 레이어 패널 — CCTV 하위 트리 펼침 화살표 (트리 자체는 TreeSelect 재사용). */
+  .layer-tree-caret {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 26px;
+    line-height: 26px;
+  }
+  /* 메인 지도 설정 — 표시할 시설물 / 반경 */
+  .admin-cctv-mapopt {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px 20px;
+    border-radius: 12px;
+    border: 1px solid var(--color-neutral-450);
+    background: var(--color-neutral-800, #001a38);
+  }
+  .admin-cctv-mapopt-summary {
+    color: #fff;
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+  .admin-cctv-mapopt-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .admin-cctv-mapopt-row.is-off {
+    opacity: 0.45;
+  }
+  .admin-cctv-mapopt-label {
+    width: 56px;
+    flex-shrink: 0;
+    color: var(--color-neutral-200, #b8c8d6);
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1;
+  }
+  .admin-cctv-mapopt-items {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 16px;
+  }
+  .admin-cctv-mapopt-items label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #fff;
+    font-size: 16px;
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+  .admin-cctv-mapopt-items input[type='checkbox'],
+  .admin-cctv-mapopt-items input[type='radio'] {
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    accent-color: #1ea7ff;
+    cursor: pointer;
+  }
+  .admin-cctv-mapopt-items input:disabled {
+    cursor: not-allowed;
+  }
+  .admin-cctv-mapopt-items i {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .admin-cctv-mapopt-count {
+    color: var(--color-neutral-300, #7f97af);
+    font-size: 15px;
+    white-space: nowrap;
+  }
+  .admin-cctv-radius-btn:disabled {
+    cursor: not-allowed;
+  }
+  /* 확인 모달 */
+  .admin-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 5000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 8, 20, 0.6);
+  }
+  .admin-modal {
+    display: flex;
+    width: 420px;
+    flex-direction: column;
+    gap: 24px;
+    padding: 28px 24px 20px;
+    border-radius: 16px;
+    border: 1px solid var(--color-neutral-450);
+    background: var(--color-neutral-800, #001a38);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  }
+  .admin-modal p {
+    color: #fff;
+    font-size: 15px;
+    line-height: 1.5;
+    text-align: center;
+  }
+  .admin-modal-actions {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+  }
+  .admin-modal-actions button {
+    height: 40px;
+    min-width: 96px;
+    padding: 0 20px;
+    border-radius: 8px;
+    background: #1ea7ff;
+    color: #001229;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1;
+  }
+  .admin-modal-actions button.is-ghost {
+    border: 1px solid var(--color-neutral-450);
+    background: transparent;
+    color: var(--color-neutral-200, #b8c8d6);
+  }
+  .admin-modal-actions button.is-ghost:hover {
+    background: rgba(120, 120, 128, 0.16);
+  }
+  /* 우 — 상세 : 좌(영상·지도) / 우(정보·분류) 2단 */
+  .admin-cctv-detail-body {
+    display: flex;
+    gap: 20px;
+    /* 좌(영상+지도) 높이에 우(정보·분류)를 맞춘다. */
+    align-items: stretch;
+    flex-shrink: 0;
+  }
+  .admin-cctv-detail-main {
+    display: flex;
+    width: 640px;
+    flex-shrink: 0;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .admin-cctv-detail-side {
+    display: flex;
+    flex: 1 0 0;
+    max-width: 720px;
+    min-width: 0;
+    min-height: 0;
+    flex-direction: column;
+    gap: 14px;
+  }
+  /* 분류 박스 — 남는 세로 공간을 채우고, 길어지면 그 안에서만 스크롤. */
+  .admin-cctv-detail-side .admin-cctv-classify {
+    flex: 1 0 0;
+    min-height: 0;
+    overflow-y: auto;
+  }
+  .admin-cctv-classify-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  /* 보기 모드 — '상위 > 하위1, 하위2' 를 분류마다 한 줄씩. */
+  .admin-cctv-view {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .admin-cctv-view-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    font-size: 17px;
+    line-height: 1.4;
+  }
+  .admin-cctv-view-clfy {
+    color: #fff;
+    font-weight: 600;
+  }
+  .admin-cctv-view-sep {
+    color: var(--color-neutral-300, #7f97af);
+  }
+  .admin-cctv-view-subs {
+    color: #42b8ff;
+    font-weight: 500;
+  }
+  .admin-cctv-classify-sec {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .admin-cctv-hint {
+    color: var(--color-neutral-300, #7f97af);
+    font-size: 15px;
+  }
+  /* 우 — 상세 */
+  .admin-cctv-detail {
+    display: flex;
+    flex: 1 0 0;
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px 24px;
+    overflow-y: auto;
+    min-height: 0;
+  }
+  .admin-cctv-badge.is-none {
+    background: transparent;
+    border: 1px solid var(--color-neutral-450);
+    color: var(--color-neutral-300, #7f97af);
+  }
+  .admin-cctv-detail-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .admin-cctv-detail-head h2 {
+    font-size: 22px;
+    font-size: 18px;
+    font-weight: 600;
+  }
+  .admin-cctv-status {
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .admin-cctv-status.is-on {
+    background: #45e36c;
+    color: #001229;
+  }
+  .admin-cctv-status.is-off {
+    background: #ff4245;
+    color: #fff;
+  }
+  .admin-cctv-media {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .admin-cctv-player {
+    width: 640px;
+    height: 360px;
+    flex-shrink: 0;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .admin-cctv-detail-main .admin-cctv-map {
+    width: 640px;
+    height: 360px; /* 플레이어와 같은 높이 */
+  }
+  .admin-cctv-map {
+    width: 420px;
+    height: 360px;
+    flex-shrink: 0;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  /* 카메라 정보 — 라벨 위 / 값 아래 카드로 묶어 한눈에 읽히게. */
+  .admin-cctv-info {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .admin-cctv-info div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 8px;
+    min-height: 72px;
+    padding: 12px 18px;
+    border-radius: 10px;
+    border: 1px solid var(--color-neutral-450);
+    background: var(--color-neutral-800, #001a38);
+    min-width: 0;
+  }
+  .admin-cctv-info div.is-wide {
+    grid-column: 1 / -1;
+  }
+  .admin-cctv-info dt {
+    color: var(--color-neutral-300, #7f97af);
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1;
+  }
+  .admin-cctv-info dd {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: #fff;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+  .admin-cctv-classify {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 16px 20px;
+    border-radius: 12px;
+    border: 1px solid var(--color-neutral-450);
+    background: rgba(120, 120, 128, 0.06);
+  }
+  .admin-cctv-classify h3 {
+    margin: 4px 0 0;
+    font-size: 17px;
+    font-weight: 600;
+    color: #fff;
+  }
+  .admin-cctv-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .admin-cctv-chip {
+    height: 32px;
+    /* 한글 글자가 위로 떠 보여 1px 내린다 (아래 padding 만큼 위 padding 을 더함). */
+    padding: 1px 14px 0;
+    border-radius: 100px;
+    border: 1px solid var(--color-neutral-450);
+    background: var(--color-neutral-800, #001a38);
+    color: #fff;
+    font-size: 14px;
+    line-height: 1;
+  }
+  .admin-cctv-chip:hover {
+    border-color: #1ea7ff;
+  }
+  .admin-cctv-chip.is-on {
+    border-color: #fff;
+    background: linear-gradient(180deg, #42b8ff 10%, #0d8ae0 90%);
+  }
+  /* 하위 분류 — '상위분류명 : 칩들' 한 줄. */
+  .admin-cctv-sub-group {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 6px;
+  }
+  .admin-cctv-sub-title {
+    font-size: 15px;
+    flex-shrink: 0;
+    min-width: 96px;
+    color: var(--color-neutral-200, #b8c8d6);
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .admin-cctv-sub-title::after {
+    content: ' :';
+  }
+  .admin-cctv-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    padding-top: 4px;
+  }
+  .admin-cctv-dirty {
+    color: #ffd600;
+    font-size: 13px;
+  }
+  .admin-cctv-actions button {
+    height: 38px;
+    padding: 0 22px;
+    border-radius: 8px;
+    background: #1ea7ff;
+    color: #001229;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1;
+  }
+  .admin-cctv-actions button.is-ghost {
+    border: 1px solid var(--color-neutral-450);
+    background: transparent;
+    color: var(--color-neutral-200, #b8c8d6);
+  }
+  .admin-cctv-actions button.is-ghost:hover {
+    background: rgba(120, 120, 128, 0.16);
+  }
+  .admin-cctv-actions button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  /* 시설물 + 주변 CCTV 지도 (카메라 미선택 시 우측 전체) */
+  .admin-cctv-bigmap {
+    position: relative;
+    width: 704px;
+    height: 396px; /* 16:9 — 플레이어와 세로로 쌓아 1080 안에 들어가게 */
+    flex-shrink: 0;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .admin-cctv-bigplayer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 704px;
+    height: 396px; /* 지도와 동일 (16:9) */
+    flex-shrink: 0;
+    border-radius: 12px;
+    background: #000;
+    overflow: hidden;
+  }
+  .admin-cctv-bigmap-canvas {
+    width: 100%;
+    height: 100%;
+  }
+  .admin-cctv-legend {
+    position: absolute;
+    left: 12px;
+    bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: rgba(0, 18, 41, 0.82);
+    color: #fff;
+    font-size: 12px;
+    line-height: 1;
+  }
+  .admin-cctv-legend span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .admin-cctv-legend i {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 1.5px solid #fff;
+  }
+  .admin-cctv-legend em {
+    color: var(--color-neutral-300, #7f97af);
+    font-style: normal;
+  }
+  .admin-cctv-empty {
+    padding: 20px;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 17px;
+    line-height: 1.4;
+  }
+
+  /* 배수펌프장 상세 — 지도는 왼쪽에서, 우측 패널은 오른쪽에서 들어온다.
+     돌아가기는 각자 왔던 방향으로 나간다. */
+  @keyframes pump-detail-in-left {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+  @keyframes pump-detail-out-left {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-100%);
+    }
+  }
+  @keyframes pump-detail-in-right {
+    from {
+      transform: translateX(100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+  @keyframes pump-detail-out-right {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(100%);
+    }
+  }
+  .pump-detail-map.is-in {
+    animation: pump-detail-in-left 0.35s cubic-bezier(0.33, 1, 0.68, 1)
+      backwards;
+  }
+  .pump-detail-map.is-out {
+    animation: pump-detail-out-left 0.35s cubic-bezier(0.33, 1, 0.68, 1)
+      forwards;
+  }
+  /* 우측 패널 — 목록 위를 덮는 오버레이 (SidePanel body 안). */
+  .pump-detail-panel {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background: var(--color-neutral-800, #001a38);
+  }
+  .pump-detail-panel.is-in {
+    animation: pump-detail-in-right 0.35s cubic-bezier(0.33, 1, 0.68, 1)
+      backwards;
+  }
+  .pump-detail-panel.is-out {
+    animation: pump-detail-out-right 0.35s cubic-bezier(0.33, 1, 0.68, 1)
+      forwards;
+  }
+
+  /* 재난 예·경보 — 지도 폭이 그대로라 우측 전체를 덮는 오버레이로 들어오고 나간다. */
+  @keyframes disaster-slide-in {
+    from {
+      transform: translateX(100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+  @keyframes disaster-slide-out {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(100%);
+    }
+  }
+  .disaster-overlay {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%;
+    z-index: 5;
+  }
+  .disaster-overlay.is-in {
+    animation: disaster-slide-in 0.35s cubic-bezier(0.33, 1, 0.68, 1) backwards;
+  }
+  /* 나갈 때는 뒤 화면(새 메뉴의 CCTV·패널)이 다 그려진 뒤에 빠진다.
+     오버레이가 그동안 가려주므로 뒤에서 내용이 바뀌는 장면이 보이지 않는다. */
+  .disaster-overlay.is-out {
+    animation: disaster-slide-out 0.3s cubic-bezier(0.33, 1, 0.68, 1) forwards;
+  }
+  /* 메뉴 '해제' (→ 메인) — 지도가 넓어지는 게 먼저 보이도록 잠깐 기다렸다 빠진다.
+     빠지는 속도 자체는 다른 슬라이드와 동일. */
+  .disaster-overlay.is-out.is-slow {
+    animation: disaster-slide-out 0.3s cubic-bezier(0.33, 1, 0.68, 1) 0.25s
+      forwards;
+  }
+
+  /* 3단계 — 지도가 좁아지며 생긴 자리로 우측 패널이 밀려 들어온다 (fade 없음). */
+  @keyframes slope-panel-in {
+    from {
+      transform: translateX(100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+  .slope-panel-in {
+    animation: slope-panel-in 0.4s cubic-bezier(0.33, 1, 0.68, 1) 0.7s backwards;
+  }
+  /* 급경사지에서 나갈 때 — 패널이 오른쪽 바깥으로 밀려난다 (fade 없음). */
+  @keyframes slope-panel-out {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(100%);
+    }
+  }
+  .slope-panel-out {
+    animation: slope-panel-out 0.4s cubic-bezier(0.33, 1, 0.68, 1) forwards;
+  }
+
+  /* 이탈 — 서브탭·요약 바가 먼저 사라지고(0.15s) 자리도 닫힌다(0.3s). */
+  @keyframes slope-header-close {
+    from {
+      height: 168px;
+    }
+    to {
+      height: 0;
+    }
+  }
+  @keyframes slope-header-leave {
+    from {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    to {
+      transform: translateY(-10px);
+      opacity: 0;
+    }
+  }
+  /* 2단계 — 헤더가 다 사라진 뒤 자리를 닫는다. 본문 높이 증가와 같은 구간이라
+     본문 아래쪽은 제자리에 두고 위로 늘어나는 것처럼 보인다. */
+  /* 본문 높이 확대(0.5s) 와 길이·이징이 같아야 아래쪽이 제자리에 고정된다.
+     길이가 다르면 상단이 올라가는 속도와 어긋나 가운데가 벌어지는 것처럼 보인다. */
+  /* delay 는 본문 높이 transition 이 실제로 시작하는 프레임(리렌더 다음 프레임) 에 맞춰
+     0.45s + 2프레임. 어긋나면 초반에 하단이 딸려 올라갔다 내려온다. */
+  .slope-header-slot.is-closing {
+    animation: slope-header-close 0.5s cubic-bezier(0.33, 1, 0.68, 1) 0.48s
+      forwards;
+  }
+  /* 1단계 — 서브탭·요약 바가 먼저 사라진다. */
+  .slope-header-enter.is-closing {
+    animation: slope-header-leave 0.45s cubic-bezier(0.33, 1, 0.68, 1) forwards;
+  }
+
+  .dashboard-content-transition {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    flex-direction: column;
+  }
+  @keyframes dashboard-content-leave {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(24px); }
+  }
+  @keyframes dashboard-content-enter {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .dashboard-content-transition.is-leaving {
+    pointer-events: none;
+    animation: dashboard-content-leave 0.55s cubic-bezier(0.4, 0, 0.6, 1) forwards;
+  }
+  .dashboard-content-transition.is-slope-leaving { pointer-events: none; }
+  .dashboard-content-transition.is-waiting-map { opacity: 0; pointer-events: none; }
+  .dashboard-content-transition.is-waiting-map .slope-header-enter { animation-play-state: paused; }
+  .dashboard-content-transition.is-slope-leaving > main {
+    animation: dashboard-content-leave 0.45s ease-in 0.45s forwards;
+  }
+  .dashboard-content-transition.is-entering > main {
+    animation: dashboard-content-enter 0.6s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  }
+  /* 관리자는 메뉴 공간을 먼저 확보해 본문이 움직이는 동안 높이가 변하지 않게 한다.
+     본문 등장(600ms)이 끝난 다음 서브탭과 공지를 위에서 아래로 드러낸다. */
+  .dashboard-content-transition.is-admin > .slope-header-slot {
+    animation: none;
+  }
+  .dashboard-content-transition.is-admin .slope-header-enter {
+    animation: slope-header-enter 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.68s backwards;
+  }
+  @keyframes admin-panel-slide-in {
+    from { opacity: 0; transform: translateX(48px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes admin-slope-header-leave {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(-16px); }
+  }
+  .dashboard-content-transition.is-admin-slope-pair > .slope-header-slot { animation: none; }
+  .dashboard-content-transition.is-admin-slope-pair .slope-panel-in { animation: none; }
+  .dashboard-content-transition.is-pair-leaving { pointer-events: none; }
+  .dashboard-content-transition.is-pair-leaving > main {
+    animation: dashboard-content-leave 0.7s cubic-bezier(0.4, 0, 0.6, 1) forwards;
+  }
+  .dashboard-content-transition.is-admin-slope-pair.is-pair-leaving .slope-header-enter {
+    animation: admin-slope-header-leave 0.55s cubic-bezier(0.4, 0, 0.6, 1) 0.7s forwards;
+  }
+  .dashboard-content-transition.is-admin-slope-pair:not(.is-pair-leaving) .slope-header-enter {
+    animation: slope-header-enter 0.65s cubic-bezier(0.25, 0.1, 0.25, 1) backwards;
+  }
+  .dashboard-content-transition.is-pair-entering > main {
+    animation: dashboard-content-enter 0.8s cubic-bezier(0.25, 0.1, 0.25, 1) 0.75s backwards;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .dashboard-content-transition.is-admin-slope-pair > main,
+    .dashboard-content-transition.is-admin-slope-pair .slope-header-enter {
+      animation-duration: 0.01ms !important;
+      animation-delay: 0s !important;
+    }
+  }
+  @keyframes admin-map-slide-in {
+    from { opacity: 0; transform: translateX(-48px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  .dashboard-content-transition.is-admin-slide-entry > main { animation: none; }
+  .is-admin-slide-entry .admin-side-entry {
+    animation: admin-panel-slide-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  }
+  .is-admin-slide-entry .admin-cctv-entry {
+    animation: admin-panel-slide-in 0.7s cubic-bezier(0.25, 0.1, 0.25, 1) 0.65s backwards;
+  }
+  .is-admin-slide-entry .admin-map-reveal {
+    animation: admin-map-slide-in 0.75s cubic-bezier(0.25, 0.1, 0.25, 1) 0.15s backwards;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .is-admin-slide-entry .admin-side-entry,
+    .is-admin-slide-entry .admin-cctv-entry,
+    .is-admin-slide-entry .admin-map-reveal { animation-duration: 0.01ms; animation-delay: 0s; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .dashboard-content-transition.is-leaving,
+    .dashboard-content-transition.is-slope-leaving > main,
+    .dashboard-content-transition.is-entering > main {
+      animation-duration: 0.01ms;
+      animation-delay: 0s;
+    }
+  }
+  .slope-header-slot {
+    height: 168px;
+    overflow: hidden;
+    /* 1단계 — 본문 높이 축소와 같은 구간. 자리가 열리는 만큼 본문 상단이 내려와
+       아래쪽은 제자리에 두고 위에서 아래로 짧아지는 것처럼 보인다. */
+    animation: slope-header-open 0.5s cubic-bezier(0.33, 1, 0.68, 1) backwards;
+  }
+  .slope-header-enter {
+    /* 3단계 — 폭 변화까지 끝난 뒤 서브탭·요약 바 등장. */
+    animation: slope-header-enter 0.4s cubic-bezier(0.33, 1, 0.68, 1) 1.05s
+      backwards;
+  }
+
+  /* 급경사지 서브탭 — 960×62 pill 안에 306 버튼 3개. */
+  .slope-subtabs {
+    display: flex;
+    width: 960px;
+    height: 62px;
+    padding: 8px 5px;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 100px;
+    border: 2px solid var(--color-neutral-450);
+    background: var(--color-neutral-700);
+  }
+  .slope-subtab {
+    display: flex;
+    width: 306px;
+    /* 글씨를 2px 아래로 (버튼 높이는 그대로). */
+    padding: 12px 0 8px;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+    overflow: hidden;
+    border-radius: 100px;
+    border: 1px solid transparent;
+    color: #9badc0;
+    text-align: center;
+    text-overflow: ellipsis;
+    font-family: 'Do Hyeon', var(--font-sans);
+    font-size: 30px;
+    font-weight: 400;
+    line-height: 32px;
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+  }
+  /* hover — 메뉴 버튼과 동일 (Neutral-450). */
+  .slope-subtab:hover {
+    background: var(--color-neutral-450);
+  }
+  .slope-subtab.is-active {
+    border-color: rgba(0, 0, 0, 0.2);
+    background: var(--color-neutral-450);
+    color: #fff;
+    box-shadow: 3px 3px 5px 0 rgba(255, 255, 255, 0.33) inset;
+  }
+
+  /* 급경사지 요약 바 — 서브탭 아래 공통 (총 개소·등급 집계 / 상시계측 지역 탭). */
+  /* 관리자 본문 — 서버랙. 배경 이미지 위에 랙 슬롯을 세로로 쌓는다. */
+  .admin-device-list {
+    display: flex;
+    width: 326px;
+    height: 672px;
+    flex-shrink: 0;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 18px;
+    font-family: Roboto;
+    font-style: normal;
+  }
+  .admin-device-placeholder {
+    display: flex;
+    flex: 1;
+    min-width: 0;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 22px;
+    font-weight: 500;
+    line-height: 26px;
+  }
+  .admin-device-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    align-self: stretch;
+  }
+  .admin-device-header h2 {
+    margin: 0;
+    color: #fff;
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 26px;
+  }
+  .admin-device-legend {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .admin-device-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    color: #dce6ee;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 16px;
+  }
+  .admin-device-legend-dot {
+    width: 9px;
+    height: 9px;
+    flex-shrink: 0;
+    border-radius: 4.5px;
+    background: var(--device-status-color);
+  }
+  .admin-device-rows {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex: 1 0 0;
+    align-self: stretch;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .admin-device-row {
+    display: flex;
+    width: 100%;
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
+    padding: 14px 20px;
+    justify-content: space-between;
+    align-items: center;
+    align-self: stretch;
+    border-radius: 8px;
+    border: 1px solid #233e63;
+    background: rgba(0, 26, 56, 0.6);
+  }
+  .admin-device-row:hover {
+    border-color: var(--color-primary, #1ea7ff);
+  }
+  .admin-device-row:focus-visible { outline: 2px solid #1ea7ff; outline-offset: 2px; }
+  .admin-device-row.is-active {
+    border-color: var(--color-primary, #1ea7ff);
+    background: #003060;
+  }
+  .admin-device-name {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 20px;
+  }
+  .admin-device-index {
+    display: flex;
+    width: 22px;
+    padding: 2px 0;
+    flex-shrink: 0;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    border: 1px solid var(--color-primary-dark, #0d8ae0);
+    background: var(--color-neutral-700, #002247);
+    color: var(--color-primary, #1ea7ff);
+    font-size: 14px;
+    line-height: 16px;
+  }
+  .admin-device-led {
+    width: 10px;
+    height: 10px;
+    flex-shrink: 0;
+    aspect-ratio: 1 / 1;
+    border-radius: 100px;
+    background: var(--device-status-color);
+    box-shadow: 0 0 8px 0 var(--device-status-color);
+  }
+  .admin-device-list .is-normal {
+    --device-status-color: var(--color-accent-green, #45e36c);
+  }
+  .admin-device-list .is-warn {
+    --device-status-color: var(--color-accent-yellow, #ffd600);
+  }
+  .admin-device-list .is-error {
+    --device-status-color: var(--color-accent-red, #ff4245);
+  }
+  .admin-device-list .is-unknown {
+    --device-status-color: #9ea8b2;
+  }
+
+  .admin-rack-frame {
+    display: inline-flex;
+    /* 랙 사진 원본 크기 (237×672) — 안에 슬롯이 없어도 비율이 눌리지 않는다. */
+    width: 237px;
+    height: 672px;
+    flex-shrink: 0;
+    align-self: flex-start;
+    padding: 41px 36px 103px 9px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    border-radius: 8px;
+    background: linear-gradient(transparent, transparent) lightgray 0 0 / 100% 100%
+      no-repeat;
+  }
+
+  /* 랙 슬롯 — 인덱스 + 랙 칸. 위에서부터 쌓인다 (프레임 gap 2). */
+  .admin-rack-slot {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .admin-rack-slot-index {
+    display: flex;
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    border: 1px solid var(--color-primary-dark, #0d8ae0);
+    background: var(--color-neutral-700, #002247);
+    color: var(--color-primary, #1ea7ff);
+    text-align: center;
+    font-family: Roboto, sans-serif;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 16px;
+  }
+  .admin-rack-slot-box {
+    display: flex;
+    width: 164px;
+    height: 37px;
+    padding: 10px 2px;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 6px;
+    border: 3px solid var(--color-primary, #1ea7ff);
+    background: rgba(13, 138, 224, 0.2);
+  }
+
+  /* 랙 판 구역 — SECUI 장비 (브랜드 전용, 재사용 안 함). */
+  .rack-secui {
+    display: flex;
+    padding: 2px;
+    align-items: center;
+    align-self: stretch;
+    border-radius: 2px;
+    /* 테두리 0.494px 를 border 로 주면 브라우저가 1px 로 올려 안쪽 높이를 1px 씩 잡아먹는다
+       (아래 padding 이 사라짐). Figma stroke 처럼 레이아웃 밖에 그리도록 inset shadow 로. */
+    box-shadow: inset 0 0 0 0.494px #3f7cc0;
+    background: #1d5290;
+  }
+  /* 포트 제외 좌측 — 로고 */
+  .rack-secui-left {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    align-self: stretch;
+  }
+  .rack-secui-logo {
+    color: #fff;
+    font-family: Inter;
+    font-size: 4px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+  }
+  /* 로고 아래 — 세로 네모·LED·USB */
+  /* 로고 아래 줄 — 네모·LED 묶음 + USB */
+  .rack-secui-below {
+    display: flex;
+    gap: 1px;
+  }
+  /* 세로 네모 + LED 묶음 */
+  .rack-secui-ledblock {
+    display: flex;
+    gap: 1px;
+  }
+  /* LED 세 개 세로 — 칸 폭 3 */
+  .rack-secui-leds {
+    display: flex;
+    width: 3px;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .rack-secui-tall {
+    width: 3px;
+    height: 9px;
+    border-radius: 0.5px;
+    background: #e9eef4;
+  }
+
+  /* USB 두 개 */
+  .rack-secui-usb {
+    display: flex;
+    height: 100%;
+    align-items: end;
+    gap: 1px;
+  }
+  .rack-secui-usb-port {
+    width: 2px;
+    height: 6px;
+    border-radius: 0.5px;
+    background: #0e2a4a;
+  }
+
+  /* 우측 포트 영역 */
+  /* 가로 4+2+4 + gap 2 + 세로 칸 4 = 16, 세로 칸 6+2+6 = 14 (SECUI 안쪽 높이) */
+  .rack-secui-ports {
+    display: flex;
+    width: 16px;
+    align-items: flex-end;
+    gap: 2px;
+    align-self: stretch;
+  }
+  .rack-secui-ports-h {
+    display: flex;
+    gap: 2px;
+  }
+  .rack-secui-ports-v {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  /* 랙 판 부품 — 포트 격자 파트. */
+  .rack-port-grid {
+    display: flex;
+    width: 27px;
+    height: 18px;
+    padding: 0 2px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 2.074px;
+    background: #40454b;
+  }
+
+  /* 포트 배치 — 5×6 포트 2행 4열. 가로 5×4+1×3=23 (칸 27 − padding 4), 세로 6+2+6=14 (위아래 2씩). */
+  .rack-port-grid-inner {
+    display: grid;
+    grid-template-columns: repeat(4, 5px);
+    grid-template-rows: repeat(2, 6px);
+    column-gap: 1px;
+    row-gap: 2px;
+  }
+
+  /* 랙 판 부품 — 세번째 칸 (1G). */
+  .rack-1g {
+    display: flex;
+    width: 30px;
+    padding: 2px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 2px;
+    flex-shrink: 0;
+    align-self: stretch;
+    border-radius: 2px;
+    background: #40454b;
+  }
+  /* 포트 넣을 칸 */
+  .rack-1g-ports {
+    display: flex;
+    width: 27px;
+    height: 9px;
+    flex-shrink: 0;
+    align-self: center;
+    gap: 1px;
+  }
+  .rack-1g-pair {
+    display: flex;
+    flex: 0 0 6px;
+    height: 9px;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .rack-1g-led {
+    width: 1px;
+    height: 1px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: #9ea8b2;
+  }
+  .rack-1g-led.is-on {
+    background: #45e36c;
+  }
+  .rack-1g-port {
+    width: 4px;
+    height: 5px;
+    flex-shrink: 0;
+    border-radius: 0.3px;
+    background: #0e1319;
+    box-shadow: inset 0 0 0 0.168px #9ea8b2;
+  }
+  .rack-1g-port.is-on {
+    background: #2ecc5e;
+  }
+  .rack-1g-label {
+    color: #9db2c6;
+    text-align: right;
+    font-family: Roboto;
+    font-size: 4px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+  }
+
+
+  /* 랙 판 부품 — 타공 면. 점 행을 세로로 쌓는다 (홀수·짝수 행 개수 엇갈림). */
+  .rack-vent {
+    display: flex;
+    width: 21px;
+    height: 100%;
+    padding: 3px 4px;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+    border-radius: 1px;
+    background: #33393e;
+  }
+  /* 점 줄 — 안쪽 폭에 고르게 벌린다. */
+  .rack-vent-row {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+  }
+  /* 짝수 줄 — 홀수 줄 점 사이사이로 엇갈리게. */
+  .rack-vent-row.is-even {
+    justify-content: space-around;
+  }
+  .rack-vent-dot {
+    width: 1px;
+    height: 1px;
+    border-radius: 50%;
+    background: #727a81;
+  }
+
+  /* 랙 판 — 랙 칸 안에 들어가는 장비 앞면. 칸들을 왼쪽부터 채운다. */
+  /* 랙 판 — 배경(#0C1117)이 padding(4) 자리까지 깔려 부속들을 전부 품는다. 부속은 gap 2 로 나란히. */
+  .admin-rack-panel {
+    display: flex;
+    width: 154px;
+    height: 26px;
+    padding: 4px;
+    align-items: center;
+    gap: 2px;
+    flex-shrink: 0;
+    border-radius: 4px;
+    background: #0c1117;
+  }
+
+  /* 관리자 공지 바 — 서버실 랙 묶음 (제목 + 상태 배지). */
+  .admin-rack {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .admin-rack-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #8aadd0;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 1;
+  }
+  /* 라벨 옆 수치는 흰색 — 제목 안에서 값만 강조. */
+  .admin-rack-title strong {
+    color: #fff;
+    font-weight: 500;
+  }
+  .admin-rack-badges {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .admin-rack-badge {
+    display: flex;
+    /* 높이는 고정(28) — 글씨를 키워도 배지 자체는 커지지 않는다. */
+    height: 28px;
+    padding: 0 12px;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    border-radius: 100px;
+    color: #001229;
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 1;
+  }
+  /* 한글 잉크 중심이 위로 떠 보여 글씨만 1px 내린다 (배지 박스는 그대로). */
+  .admin-rack-badge > span {
+    position: relative;
+    top: 1px;
+  }
+  .admin-rack-badge.is-normal {
+    background: var(--color-accent-green, #45e36c);
+  }
+  .admin-rack-badge.is-warn {
+    background: var(--color-accent-yellow, #ffd600);
+  }
+  .admin-rack-badge.is-error {
+    background: var(--color-accent-red, #ff4245);
+    color: #fff;
+  }
+  .admin-rack-badge.is-unknown {
+    background: #64748b;
+    color: #fff;
+  }
+
+  /* 관리자 공지 바 — 이상 장비 묶음 (라벨 + 장비 목록). */
+  .admin-fault {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .admin-fault-label {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    color: #8aadd0;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 1;
+  }
+  .admin-fault-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  /* 장비 목록에서의 순번 — 목록과 같은 번호를 쓴다. */
+  /* 순번 — 정원(圓) 인덱스. 폭·높이를 같게 두고 radius 50%. */
+  .admin-fault-index {
+    display: flex;
+    width: 25px;
+    height: 25px;
+    padding: 0;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    border: 1px solid var(--color-primary-dark, #0d8ae0);
+    background: var(--color-neutral-700, #002247);
+    color: #0d8ae0;
+    font-family: Roboto, sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1;
+  }
+  /* 숫자 잉크 중심이 위로 떠 보여 1px 내림 (배지 박스는 그대로). */
+  .admin-fault-index > span {
+    position: relative;
+    top: 1px;
+  }
+  .admin-fault-name {
+    color: var(--color-accent-yellow, #ffd600);
+    font-family: Roboto, sans-serif;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px;
+  }
+
+  /* 관리자 공지 바 — 급경사지 요약 바와 같은 크기지만 내용이 왼쪽부터 gap 40 으로 붙는다. */
+  .admin-notice-bar {
+    display: flex;
+    width: 1888px;
+    height: 72px;
+    padding: 10px 20px 10px 24px;
+    align-items: center;
+    gap: 40px;
+    border-radius: 12px;
+    border: 2px solid var(--color-neutral-450);
+    background: var(--color-neutral-700);
+  }
+  .slope-summary-bar {
+    display: flex;
+    width: 1888px;
+    height: 72px;
+    padding: 10px 20px 10px 24px;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 12px;
+    border: 2px solid var(--color-neutral-450);
+    background: var(--color-neutral-700);
+  }
+  .slope-area-tab {
+    /* 고정 161×46 (content 139×32 + padding 6/10 + border 1)
+       이름은 좌측, 상태 배지는 우측 끝 — 이름 길이가 달라도 양쪽 여백이 같다. */
+    display: flex;
+    width: 161px;
+    height: 46px;
+    padding: 6px 10px;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 100px;
+    border: 1px solid rgba(175, 205, 238, 0.15);
+    background: linear-gradient(169deg, #36699b 7.84%, #16375a 91.78%);
+    box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.15);
+  }
+  /* hover — 메뉴 버튼과 동일 (Neutral-450). */
+  .slope-area-tab:hover {
+    background: var(--color-neutral-450);
+  }
+  .slope-area-tab.is-active {
+    border-color: #fff;
+    background: linear-gradient(180deg, #3ba7e8 10%, #1b5c9e 90%);
+  }
+
+  /* 급경사지 계측 상세 — 지역별 센서값 패널 (500×672). */
+  .slope-sensor-panel {
+    display: flex;
+    width: 500px;
+    height: 672px;
+    padding: 20px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 16px;
+    border-radius: 16px;
+    background: var(--color-neutral-600, #002a54);
+  }
+  .slope-sensor-box {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    align-self: stretch;
+  }
+  .slope-sensor-box-head {
+    display: flex;
+    padding: 12px 20px;
+    justify-content: center;
+    align-items: center;
+    align-self: stretch;
+    border-radius: 12px;
+    color: #fff;
+    font-family: Roboto, sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 20px;
+  }
+  .slope-sensor-box-body {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    align-self: stretch;
+  }
+  .slope-sensor-item {
+    display: flex;
+    padding: 10px 20px;
+    justify-content: space-between;
+    align-items: center;
+    align-self: stretch;
+    border-radius: 12px;
+    border: 1px solid transparent;
+    background: rgba(255, 255, 255, 0.1);
+  }
+  .slope-sensor-item:hover {
+    border-color: #1ea7ff;
+  }
+  /* 선택된 항목 — 우측 상세(차트)에 표출 중인 센서. */
+  .slope-sensor-item.is-active,
+  .slope-sensor-item.is-active:hover {
+    border-color: #1ea7ff;
+    background: var(--color-primary-dark, #0d8ae0);
+  }
+  .slope-sensor-item-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #fff;
+    font-family: Roboto, sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 20px;
+  }
+  .slope-sensor-item-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .slope-sensor-value {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+    color: #fff;
+    font-family: Roboto, sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 20px;
+  }
+  .slope-sensor-status {
+    display: flex;
+    padding: 6px 12px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 100px;
+    color: #001229;
+    font-family: Roboto, sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 16px;
+  }
+
+  /* 급경사지 조기경보·통계 — 우측 통계 패널 (500×672). */
+  .slope-stats-panel {
+    display: flex;
+    height: 672px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .slope-stats-box {
+    display: flex;
+    width: 500px;
+    padding: 20px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+    flex: 1 0 0;
+    border-radius: 16px;
+    background: var(--color-neutral-600, #002a54);
+  }
+  .slope-stats-title {
+    color: #fff;
+    font-family: Roboto, sans-serif;
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 26px;
+  }
+  .slope-stats-ranges {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .slope-stats-range {
+    display: flex;
+    width: 84px;
+    padding: 8px 14px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 100px;
+    border: 1px solid transparent;
+    background: var(--color-neutral-450);
+    color: #fff;
+    font-family: Roboto, sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 16px;
+  }
+  .slope-stats-range.is-active {
+    border-color: #fff;
+    background: linear-gradient(180deg, #42b8ff 10%, #0d8ae0 90%);
+  }
+  .slope-stats-summary {
+    display: flex;
+    padding: 12px 16px;
+    align-items: center;
+    gap: 12px;
+    align-self: stretch;
+    border-radius: 9px;
+    background: var(--color-neutral-450);
+  }
+  .slope-stats-summary-left {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    flex: 1 0 0;
+  }
+  .slope-stats-summary-title {
+    color: var(--color-neutral-200, #b8c8d6);
+    font-family: Roboto, sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 20px;
+  }
+  .slope-stats-summary-period {
+    color: #fff;
+    font-family: Roboto, sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 20px;
+  }
+  .slope-stats-summary-count {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #fff;
+    text-align: right;
+    font-family: Roboto, sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 20px;
+    white-space: nowrap;
+  }
+  /* 발령 n건만 B2 (18), 나머지는 B3 (16). */
+  .slope-stats-issued {
+    font-size: 18px;
+  }
+  /* 단계별 발령 건수 */
+  .slope-stats-chart-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    align-self: stretch;
+  }
+  .slope-stats-chart-title {
+    color: #fff;
+    font-family: Roboto, sans-serif;
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 20px;
+  }
+  .slope-stats-chart-total {
+    color: #fff;
+    text-align: right;
+    font-family: Roboto, sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 20px;
+  }
+  .slope-stats-bars {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 22px;
+    align-self: stretch;
+  }
+  .slope-stats-bar-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 57px;
+    align-self: stretch;
+  }
+  .slope-stats-bar-label {
+    /* 가장 긴 '정상(해제)' 기준 고정 폭 — 라벨 길이가 달라도 막대 시작이 같아야 한다. */
+    width: 88px;
+    flex-shrink: 0;
+    color: #fff;
+    font-family: Roboto, sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 20px;
+  }
+  /* 막대 — 규격 미확정 (시안 CSS 대기), 임시 높이/색만. */
+  .slope-stats-bar-track {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1 0 0;
+  }
+  .slope-stats-bar-fill {
+    height: 16px;
+    min-width: 4px;
+    border-radius: 4px;
+    /* 기간을 바꿔 건수가 달라지면 막대가 미끄러지듯 줄고 늘어난다. */
+    transition: width 0.8s ease;
+  }
+  .slope-stats-bar-count {
+    color: #fff;
+    font-family: Roboto, sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 20px;
+  }
+
+  /* 기간설정 datepicker (442×276) */
+  .slope-date-picker {
+    position: absolute;
+    top: calc(100% + 8px);
+    /* 442px 라 버튼 줄(360px) 우측 기준이면 왼쪽이 패널 밖으로 나가 잘린다.
+       박스 내부 폭은 460px 이라 좌측 기준이면 그대로 들어간다. */
+    left: 0;
+    z-index: 20;
+    display: flex;
+    width: 442px;
+    height: 276px;
+    align-items: center;
+  }
+  .slope-date-month {
+    display: flex;
+    box-sizing: border-box;
+    width: 220px;
+    height: 100%;
+    padding: 12px;
+    flex-direction: column;
+    align-items: center;
+    /* 내용(헤더+달력)이 276 보다 짧아서 위아래 여백을 같게. */
+    justify-content: center;
+    gap: 8px;
+    flex-shrink: 0;
+    background: var(--color-neutral-800, #001a38);
+    box-shadow: 0 5px 12px 0 rgba(0, 0, 0, 0.14);
+  }
+  /* 두 달력이 맞닿는 가운데에만 구분선. 바깥 모서리만 둥글게. */
+  .slope-date-month.is-start {
+    border-radius: 12px 0 0 12px;
+  }
+  .slope-date-month.is-end {
+    border-left: 1px solid #1ea7ff;
+    border-radius: 0 12px 12px 0;
+  }
+  /* 헤더 — 바깥쪽에만 화살표, 년월은 가운데. */
+  .slope-date-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    align-self: stretch;
+  }
+  .slope-date-head button {
+    flex-shrink: 0;
+    line-height: 0;
+  }
+  /* 이번 달 이후로는 못 넘어간다. */
+  .slope-date-head button:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+  .slope-date-arrow-space {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+  }
+  .slope-date-calendar {
+    display: flex;
+    width: 196px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  .slope-date-ym {
+    flex: 1 0 0;
+    color: #fff;
+    text-align: center;
+    font-family: Roboto, sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 20px;
+  }
+  .slope-date-week {
+    display: flex;
+    align-items: center;
+  }
+  .slope-date-cell {
+    display: flex;
+    box-sizing: border-box;
+    width: 28px;
+    padding: 6px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    color: #fff;
+    font-family: Roboto, sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 14px;
+  }
+  .slope-date-cell.is-other {
+    opacity: 0.4;
+  }
+  /* 선택 불가 (미래 날짜 / 시작·끝 역전 구간) — 지난달·다음달 날짜와 같은 톤. */
+  .slope-date-cell.is-disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+  .slope-date-cell.is-today {
+    color: #0d8ae0;
+  }
+  /* hover — 배경 대신 선택 색 테두리 (inset shadow 로 칸 크기 유지). */
+  button.slope-date-cell:not(:disabled):hover {
+    border-radius: 4px;
+    box-shadow: inset 0 0 0 1px #1ea7ff;
+  }
+  .slope-date-cell.is-in-range {
+    background: var(--color-neutral-450);
+  }
+  .slope-date-cell.is-start {
+    border-radius: 4px 0 0 4px;
+    background: #1ea7ff;
+    color: #fff;
+  }
+  .slope-date-cell.is-end {
+    border-radius: 0 4px 4px 0;
+    background: #1ea7ff;
+    color: #fff;
+  }
+
+  /* 월별 추이 차트 */
+  .slope-stats-months {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    flex: 1 0 0;
+    align-self: stretch;
+    min-height: 0;
+    /* 1~12월 전부 표출 — 폭이 모자라면 가로 스크롤 (스크롤바는 별도 요소). */
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .slope-stats-months::-webkit-scrollbar {
+    display: none;
+  }
+  .slope-stats-month {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    /* 6개월 표출 때의 열 폭(70) 유지 — 12개월은 가로 스크롤. */
+    flex: 0 0 70px;
+    align-self: stretch;
+  }
+  /* 막대가 채울 영역 — 값 비례 높이를 주기 위해 flex 1 wrapper 를 둔다. */
+  .slope-stats-month-bar-area {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    flex: 1 0 0;
+    align-self: stretch;
+    min-height: 0;
+    /* tooltip(22) + 간격(6) 자리. 가로 스크롤 컨테이너가 세로로도 잘라서, 최대 막대 위 tooltip 이 안 보였다. */
+    padding-top: 28px;
+  }
+  /* 막대 hover — 건수 tooltip (막대 바로 위). 히트 영역은 컬럼 전체. */
+  .slope-stats-month-bar::after {
+    content: attr(data-count);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translate(-50%, -6px);
+    padding: 4px 8px;
+    border-radius: 6px;
+    background: rgba(0, 26, 56, 0.9);
+    color: #fff;
+    font-family: Roboto, sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 14px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s;
+  }
+  .slope-stats-month-bar-area:hover .slope-stats-month-bar::after {
+    opacity: 1;
+  }
+  .slope-stats-month-bar {
+    position: relative;
+    width: 36px;
+    min-height: 2px;
+    border-radius: 4px;
+    background: #42b8ff;
+  }
+  .slope-stats-month-label {
+    /* B6 */
+    color: #fff;
+    text-align: center;
+    font-family: Roboto, sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 14px;
+  }
+
+  /* 급경사지 조기경보·통계 — 좌측 패널 (580×672). */
+  .slope-alert-panel {
+    display: flex;
+    width: 580px;
+    height: 672px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .slope-alert-pending {
+    display: flex;
+    width: 580px;
+    /* content 540×254 + padding 20 = 294 */
+    height: 294px;
+    padding: 20px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    border-radius: 16px;
+    background: var(--color-neutral-600, #002a54);
+  }
+  .slope-alert-pending-head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    align-self: stretch;
+  }
+  .slope-alert-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    align-self: stretch;
+    /* B1 */
+    color: #fff;
+    font-family: Roboto, sans-serif;
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 26px;
+  }
+  .slope-alert-count {
+    /* B2 */
+    color: #42b8ff;
+    text-align: center;
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 20px;
+  }
+  .slope-alert-total {
+    color: #fff;
+    text-align: right;
+    font-family: Roboto, sans-serif;
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 20px;
+  }
+  /* 발령 필요 카드 — 건수만큼 가로로 늘어난다. */
+  .slope-alert-cards {
+    display: flex;
+    align-items: stretch;
+    gap: 12px;
+    align-self: stretch;
+    /* 남은 높이를 채워서 빈 문구가 세로 가운데에 오도록. */
+    flex: 1 0 0;
+    min-height: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .slope-alert-cards::-webkit-scrollbar {
+    display: none;
+  }
+  .slope-alert-card {
+    display: flex;
+    padding: 16px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    flex-shrink: 0;
+    border-radius: 16px;
+    background: var(--color-neutral-450);
+  }
+  .slope-alert-card-head {
+    align-self: stretch;
+    color: #fff;
+    font-family: Roboto, sans-serif;
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 26px;
+  }
+  .slope-alert-card-body {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  .slope-alert-card-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    align-self: stretch;
+    /* 배지가 든 행과 글자만 있는 행의 높이를 맞춘다 (배지 28px 기준). */
+    min-height: 28px;
+  }
+  .slope-alert-card-label {
+    width: 64px;
+    flex-shrink: 0;
+    color: var(--color-neutral-200, #b8c8d6);
+    font-family: Roboto, sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 20px;
+  }
+  .slope-alert-card-value {
+    display: flex;
+    align-items: center;
+    /* 발령 시간(YYYY-MM-DD HH:mm) 처럼 긴 값이 잘리지 않게 하한만 둔다. */
+    min-width: 130px;
+    flex-shrink: 0;
+    color: #fff;
+    font-family: Roboto, sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 20px;
+  }
+  .slope-alert-status {
+    display: flex;
+    padding: 6px 12px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 100px;
+    color: #001229;
+    font-family: Roboto, sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 16px;
+    white-space: nowrap;
+  }
+  /* 발령 이력 */
+  .slope-alert-history {
+    display: flex;
+    padding: 20px 12px 20px 20px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    flex: 1 0 0;
+    align-self: stretch;
+    border-radius: 16px;
+    background: var(--color-neutral-600, #002a54);
+  }
+  .slope-alert-history-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    align-self: stretch;
+  }
+  .slope-alert-history-body {
+    display: flex;
+    align-items: stretch;
+    gap: 8px;
+    flex: 1 0 0;
+    align-self: stretch;
+    min-height: 0;
+  }
+  .slope-alert-list {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    flex: 1 0 0;
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+  .slope-alert-list::-webkit-scrollbar {
+    display: none;
+  }
+  .slope-alert-row {
+    display: flex;
+    padding: 10px 20px;
+    align-items: center;
+    gap: 8px;
+    align-self: stretch;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.1);
+  }
+  .slope-alert-row-main {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1 0 0;
+  }
+  .slope-alert-change {
+    display: flex;
+    width: 144px;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+  .slope-alert-area {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1 0 0;
+    color: #fff;
+    font-family: Roboto, sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 20px;
+  }
+  .slope-alert-actor,
+  .slope-alert-at {
+    display: flex;
+    height: 16px;
+    flex-direction: column;
+    justify-content: center;
+    flex-shrink: 0;
+    color: #fff;
+    font-family: Roboto, sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 20px;
+  }
+  .slope-alert-actor {
+    width: 100px;
+  }
+  .slope-alert-at {
+    /* 'MM-DD HH:mm' 한 줄 폭. 80px 이면 시:분이 다음 줄로 넘어간다. */
+    width: 96px;
+    white-space: nowrap;
+  }
+  .slope-alert-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: stretch;
+    flex: 1 0 0;
+    min-height: 40px;
+    color: rgba(255, 255, 255, 0.45);
+    font-family: Roboto, sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+  }
+  /* 커스텀 스크롤바 (가로 / 세로 공용) */
+  .slope-scroll-track {
+    display: flex;
+    border-radius: 99px;
+    background: rgba(255, 255, 255, 0);
+  }
+  .slope-scroll-track.is-x {
+    width: 100%;
+    height: 6px;
+    flex-direction: row;
+    align-items: center;
+    align-self: center;
+  }
+  .slope-scroll-track.is-y {
+    width: 6px;
+    flex-direction: column;
+    align-items: flex-start;
+    align-self: stretch;
+  }
+  .slope-scroll-track.is-x .slope-scroll-thumb {
+    width: 40px;
+    align-self: stretch;
+  }
+  .slope-scroll-track.is-y .slope-scroll-thumb {
+    height: 40px;
+    align-self: stretch;
+  }
+  .slope-scroll-thumb {
+    flex-shrink: 0;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.25);
+    cursor: grab;
+  }
+
+  /* 급경사지 계측 상세 — 센서 차트 패널 (580×672). */
+  .slope-chart-panel {
+    display: flex;
+    width: 580px;
+    height: 672px;
+    padding: 20px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    border-radius: 16px;
+    background: var(--color-neutral-600, #002a54);
+  }
+  .slope-chart-head {
+    display: flex;
+    align-items: center;
+    align-self: stretch;
+  }
+  /* 이름·배지는 세로 중앙, 관측시간만 배지 아랫변에 맞춘다. */
+  .slope-chart-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #fff;
+    font-family: Roboto, sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 20px;
+  }
+  .slope-chart-observed-time {
+    align-self: flex-end;
+    color: var(--color-neutral-200, #b8c8d6);
+    font-family: Roboto, sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 14px;
+  }
+  .slope-chart-periods {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .slope-chart-period {
+    display: flex;
+    width: 84px;
+    padding: 8px 14px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 100px;
+    border: 1px solid transparent;
+    background: var(--color-neutral-450);
+    color: #fff;
+    font-family: Roboto, sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 16px;
+  }
+  .slope-chart-period.is-active {
+    border-color: #fff;
+    background: linear-gradient(180deg, #42b8ff 10%, #0d8ae0 90%);
+  }
+  .slope-chart-area {
+    display: flex;
+    /* 패널 남는 높이를 차트가 전부 쓴다 (계측기 정보는 지도 팝업으로 옮김). */
+    flex: 1 1 0;
+    min-height: 0;
+    /* 위 여백을 차트 grid.top 으로 넘겨 범례가 위쪽 여백 안에 들어가게 한다 (플롯 위치는 그대로). */
+    padding: 8px 12px 20px;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    align-self: stretch;
+    border-radius: 16px;
+    background: var(--color-neutral-800, #001a38);
+  }
+  /* 값이 하나도 없는 계측기 — 축만 남은 빈 차트 위에 겹쳐 안내. */
+  .slope-chart-empty {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    color: #7f97af;
+    font-family: Pretendard, sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1;
+    pointer-events: none;
+  }
+  .slope-chart-recent {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    align-self: stretch;
+  }
+  .slope-chart-recent-item {
+    display: flex;
+    flex: 1 0 0;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 0;
+    border-radius: 8px;
+    background: var(--color-neutral-450);
+  }
+  .slope-chart-recent-time {
+    color: var(--color-neutral-300, #7f97af);
+    font-family: Roboto, sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1;
+  }
+  .slope-chart-recent-value {
+    color: #fff;
+    font-family: Roboto, sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1;
+  }
+
+  /* 센서 선택 드롭다운 — 항목 caret 클릭 시 아래(공간 없으면 위)로 표출. */
+  .sensor-dropdown {
+    position: absolute;
+    z-index: 10;
+    display: inline-flex;
+    padding: 12px;
+    align-items: flex-start;
+    gap: 8px;
+    border-radius: 12px;
+    border: 1px solid #1ea7ff;
+    background: var(--color-neutral-800, #001a38);
+  }
+  .sensor-dropdown-list {
+    display: flex;
+    /* 높이는 항목 수에 맞추고 최대 192 (항목 32 × 6) 까지만 — 넘으면 스크롤. */
+    max-height: 192px;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    overflow-y: auto;
+    /* 스크롤바는 형제 요소(.sensor-dropdown-scroll)로 그린다 — 기본 스크롤바는 숨김. */
+    scrollbar-width: none;
+  }
+  .sensor-dropdown-list::-webkit-scrollbar {
+    display: none;
+  }
+  /* 스크롤 track — 목록 오른쪽, gap 8. */
+  .sensor-dropdown-scroll {
+    display: flex;
+    width: 6px;
+    flex-direction: column;
+    align-items: flex-start;
+    align-self: stretch;
+    border-radius: 99px;
+    background: rgba(255, 255, 255, 0);
+  }
+  /* 드래그 가능한 thumb. */
+  .sensor-dropdown-thumb {
+    height: 40px;
+    align-self: stretch;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.25);
+    cursor: grab;
+  }
+  .sensor-dropdown-item {
+    display: flex;
+    padding: 8px 12px;
+    align-items: center;
+    gap: 10px;
+    border-radius: 4px;
+    white-space: nowrap;
+    /* B4 */
+    color: #fff;
+    font-family: Roboto, sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 16px;
+  }
+  .sensor-dropdown-item:hover {
+    background: var(--color-neutral-450);
+  }
+
+  /* 급경사지 총괄·관제 우측 내용 패널 본문. */
+  .slope-list-body {
+    display: flex;
+    width: 568px;
+    height: 617.461px;
+    padding: 20px 12px 20px 20px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .slope-list-search {
+    display: flex;
+    height: 48px;
+    padding: 0 20px 0 24px;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+    align-self: stretch;
+    border-radius: 99px;
+    background: rgba(255, 255, 255, 0.1);
+  }
+  .slope-list-search-input {
+    /* B3 (16/500/20) — placeholder 도 동일, opacity 0.75.
+       입력은 좌측 끝(24), 검색 버튼은 우측 끝(20) — 양 끝 배치. */
+    flex: 1 1 auto;
+    min-width: 0;
+    width: auto;
+    background: transparent;
+    border: 0;
+    outline: none;
+    color: #fff;
+    text-align: left;
+    font-family: Roboto, sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 20px;
+  }
+  .slope-list-search-input::placeholder {
+    color: #fff;
+    opacity: 0.75;
+  }
+  /* 포커스 됐을 때만 placeholder 숨김. */
+  .slope-list-search-input:focus::placeholder {
+    opacity: 0;
+  }
+  .slope-list-search-btn {
+    display: flex;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+  }
+  .slope-list-count {
+    /* B6 (12/500/14) */
+    display: flex;
+    height: 18px;
+    align-items: center;
+    gap: 6px;
+    align-self: stretch;
+    color: #b8c8d6;
+    font-family: Roboto, sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 14px;
+  }
+  .slope-list {
+    display: flex;
+    height: 483.461px;
+    flex-direction: column;
+    align-items: flex-start;
+    align-self: stretch;
+  }
+  .slope-list-head {
+    display: flex;
+    padding: 0 20px;
+    align-items: center;
+    align-self: stretch;
+    border-radius: 6px 6px 0 0;
+    background: var(--color-neutral-800, #001a38);
+  }
+  .slope-list-scroll {
+    flex: 1 0 0;
+    align-self: stretch;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  /* 스크롤바 — 목록 우측 10px 여백 안. */
+  .slope-list-scroll::-webkit-scrollbar {
+    width: 6px;
+  }
+  .slope-list-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .slope-list-scroll::-webkit-scrollbar-thumb {
+    height: 40px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.25);
+  }
+  .slope-list-row {
+    display: flex;
+    width: 526px;
+    padding: 4px 16px;
+    align-items: center;
+    background: rgba(28, 28, 28, 0.12);
+  }
+  /* hover 테두리는 inset shadow 로 — border 를 쓰면 항목 높이가 2px 밀린다. */
+  .slope-list-row:hover {
+    border-radius: 8px;
+    box-shadow: inset 0 0 0 1px #1ea7ff;
+    background: rgba(120, 120, 128, 0.16);
+  }
+  /* 선택 상태 — 이벤트 목록 row 와 동일 (Primary-light 2px inset). */
+  .slope-list-row.is-active,
+  .slope-list-row.is-active:hover {
+    border-radius: 8px;
+    box-shadow: inset 0 0 0 2px #42b8ff;
+    background: rgba(120, 120, 128, 0.16);
+  }
+  .slope-list-cell {
+    /* 헤더 / 항목 공통. content 18 + padding 7/7, 우측 4. */
+    display: flex;
+    height: 32px;
+    padding: 7px 4px 7px 0;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 10px;
+    flex-shrink: 0;
+    color: #fff;
+    font-family: Roboto, sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 18px;
+  }
+  .slope-list-head .slope-list-cell {
+    flex-direction: row;
+    align-items: center;
+    gap: 0;
+  }
+  /* 헤더 라벨 — 한글 잉크 중심이 위로 떠서 2px 내림 (caret 은 그대로). */
+  .slope-list-head .slope-list-cell > span {
+    position: relative;
+    top: 2px;
+  }
+  /* 헤더 필터 레이어 — caret 아래에 떠서 값 선택 (실제 select 아님). */
+  .slope-filter-layer {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 5;
+    display: flex;
+    width: 100px;
+    padding: 12px;
+    align-items: flex-start;
+    gap: 8px;
+    border-radius: 12px;
+    border: 1px solid #1ea7ff;
+    background: var(--color-neutral-800, #001a38);
+  }
+  /* 관리기관 / 관리부서 — 값이 길고 개수가 달라 폭은 내용에 맞추고 높이는 제한. */
+  .slope-filter-layer.is-auto {
+    width: max-content;
+    min-width: 100px;
+    max-width: 240px;
+  }
+  /* 목록 우측 컬럼 — 레이어가 패널 밖으로 나가지 않게 오른쪽 정렬. */
+  .slope-filter-layer.is-right {
+    left: auto;
+    right: 0;
+  }
+  .slope-filter-layer.is-auto .slope-filter-options {
+    height: auto;
+    max-height: 288px;
+    justify-content: flex-start;
+    overflow-y: auto;
+  }
+  .slope-filter-layer.is-auto .slope-filter-option {
+    white-space: nowrap;
+  }
+  /* 레이어 안의 항목 목록 — 항목 32 × 6 = 192. */
+  .slope-filter-options {
+    display: flex;
+    height: 192px;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    flex: 1 0 0;
+  }
+  .slope-filter-option {
+    display: flex;
+    padding: 8px 12px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    align-self: stretch;
+    border-radius: 4px;
+    text-align: left;
+    /* B4 (15/500/16) */
+    color: #fff;
+    font-family: Roboto, sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 16px;
+  }
+  .slope-filter-option:hover {
+    background: var(--color-neutral-450);
+  }
+  .slope-filter-option.is-active {
+    color: #1ea7ff;
+  }
+  /* 헤더 드롭다운 버튼 — 펼쳐지면 180도 회전. */
+  .slope-list-caret {
+    display: flex;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease;
+  }
+  .slope-list-caret.is-open {
+    transform: rotate(180deg);
+  }
+  /* 말줄임 텍스트 — 셀은 flex 정렬 그대로 두고 안쪽 span 만 자른다.
+     (셀을 block + line-height 로 바꾸면 다른 셀과 글자 baseline 이 어긋난다.) */
+  .slope-list-cell .cell-text {
+    display: block;
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  /* 항목 글씨 — 헤더(14) 보다 한 단계 작게. */
+  .slope-list-row .slope-list-cell {
+    font-size: 16px;
+  }
+  /* 등급 셀 — content 66×32 (배지 24 가 들어가므로 상하 padding 없음), 배지는 가운데. */
+  .slope-list-cell.is-grade {
+    padding: 0 4px 0 0;
+    /* 배지를 헤더 '등급' 라벨과 같은 선에서 시작하게 — 가운데면 우측으로 밀려 보인다. */
+    align-items: flex-start;
+  }
+  /* 등급 배지 — 34×24, 배경은 등급 단계 색 70% + 흰 바탕. */
+  .slope-grade-badge {
+    display: flex;
+    box-sizing: border-box;
+    width: 34px;
+    height: 24px;
+    padding: 4px 12px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 100px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    color: #fff;
+    text-align: center;
+    font-family: Roboto, sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 16px;
+  }
+
+  /* 타일 선택 그룹 (일반/위성/지형도) — 흰 pill 안에 버튼 3개. */
+  .map-tile-group {
+    display: inline-flex;
+    height: 40px;
+    padding: 3px;
+    align-items: center;
+    gap: 2px;
+    border-radius: 8px;
+    border: 1px solid #b8c8d6;
+    background: #fcfcfc;
+  }
+  .map-tile-btn {
+    /* 고정 크기 56×34 (content 36×18 + padding 8/10) — 글자 길이와 무관하게 동일. */
+    display: flex;
+    width: 56px;
+    height: 34px;
+    padding: 8px 10px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    border-radius: 5px;
+    border: 1px solid transparent;
+    color: #001229;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.12);
+  }
+  .map-tile-btn:hover {
+    border-color: #42b8ff;
+    color: #1ea7ff;
+  }
+  .map-tile-btn.is-active {
+    border-color: #001a38;
+    background: #002247;
+    color: #fff;
+  }
+
+  /* CCTV reticle 의 빨간 원 (40 + 28) — subtle pulse (scale + opacity oscillation).
+     mid (28) 이 약간 늦게 (delay 0.4s) → 안쪽부터 바깥쪽으로 호흡하는 효과. */
+  @keyframes reticle-ring-pulse {
+    0%,
+    100% {
+      transform: scale(0.92);
+      opacity: 0.7;
+    }
+    50% {
+      transform: scale(1.08);
+      opacity: 1;
+    }
+  }
+  .reticle-ring-outer,
+  .reticle-ring-mid {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: reticle-ring-pulse 1.6s ease-in-out infinite;
+  }
+  .reticle-ring-mid {
+    animation-delay: 0.4s;
+  }
+
+  /* 이벤트 활성화 마커 ring — 4 개 동심원이 stagger 로 subtle pulse (always visible).
+     opacity 0.55 ↔ 1 사이 oscillation — 완전히 사라지지 않고 호흡하듯 깜빡임.
+     안쪽 (delay 0) → 바깥 (delay 0.2/0.4/0.6) 순서. 사이클 2s. */
+  @keyframes event-focus-ring {
+    0%,
+    100% {
+      opacity: 0.55;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+  .event-focus-ring {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    border: 1px solid rgba(225, 51, 51, 0.2);
+    pointer-events: none;
+    animation: event-focus-ring 2s ease-in-out infinite;
+  }
+
+  /* 탭 전환 — 동시 cross-dissolve + 미세 슬라이드.
+     둘이 동시에 fade 해서 합치면 항상 총 opacity ≈ 1 → 배경 비치는 "흰 깜빡임" 없음.
+     서로 반대 방향 (±20px) 슬라이드로 방향성 유지. */
+  @keyframes panel-cross-fade-in {
+    from {
+      transform: translateX(100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+  /* 패널이 빠질 때 — CCTV 가 메인 위치로 돌아가는 방향(오른쪽)으로 함께 밀려난다. */
+  @keyframes panel-cross-fade-out {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(100%);
+    }
+  }
+  /* 같은 요소를 리마운트 없이 다시 재생시키려면 animation-name 이 달라져야 한다
+     (전환마다 a/b 를 번갈아 붙인다). */
+  @keyframes panel-cross-fade-in-b {
+    from {
+      transform: translateX(100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+  .panel-cross-fade-in,
+  .panel-cross-fade-in-a {
+    animation: panel-cross-fade-in 0.35s cubic-bezier(0.33, 1, 0.68, 1);
+  }
+  .panel-cross-fade-in-b {
+    animation: panel-cross-fade-in-b 0.35s cubic-bezier(0.33, 1, 0.68, 1);
+  }
+  /* 급경사지만 — 본문 높이까지 바뀌므로 레이아웃이 자리를 잡은 뒤 내용이 들어온다. */
+  .panel-cross-fade-in.is-delayed {
+    animation-delay: 0.9s;
+    animation-fill-mode: backwards;
+  }
+  .panel-cross-fade-out {
+    animation: panel-cross-fade-out 0.35s cubic-bezier(0.33, 1, 0.68, 1) forwards;
+  }
+  /* 다음 메뉴에도 패널이 있으면 이전 패널은 그대로 깔려 있고 새 패널이 덮으며 들어온다. */
+  .panel-hold {
+    animation: none;
+  }
+  /* 급경사지 — 레이아웃이 줄어드는 동안 이전 내용을 그대로 두고,
+     새 내용이 들어오는 순간에만 짧게 넘긴다 (비었다가 다시 채워지는 느낌 제거). */
+  @keyframes panel-hold-then-fade {
+    0%,
+    78% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+  .panel-cross-fade-out.is-delayed {
+    /* 0.9s 까지 이전 내용 유지 → 새 내용이 들어올 때만 넘긴다. */
+    animation: panel-hold-then-fade 1.15s linear forwards;
+  }
+
+  /* 커스텀 얇은 스크롤바 (트랙 투명 / thumb white 25%)
+     scrollbar-gutter: stable — 스크롤 필요 없을 땐 6px 슬롯이 투명 패딩처럼 자리만 잡고
+     (배경 그대로 보임), 필요할 때만 바가 그 자리에 등장 → 레이아웃 점프 X. */
+  .scrollbar-custom {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
+    scrollbar-gutter: stable;
+  }
+  .scrollbar-custom::-webkit-scrollbar {
+    width: 6px;
+  }
+  .scrollbar-custom::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 99px;
+  }
+  .scrollbar-custom::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 8px;
+  }
+
+  /* 지도 마커 하단 라벨 — 시설물명 + (값) 표시. 라벨보기 토글 ON 시 노출.
+     max-width 240px, 그 이상은 word-break: break-all 로 다음 줄로 wrap.
+     bg: 정상 white 75% / radius 6 / padding 6/8 / border white 10%. */
+  .marker-label-content {
+    display: inline-flex;
+    max-width: 240px;
+    padding: 6px 8px;
+    align-items: flex-start;
+    gap: 6px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    background: rgba(255, 255, 255, 0.75);
+    color: #001229;
+    font-family: Roboto, sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 16px;
+    word-break: break-all;
+  }
+  /* 주의경계 — Accent-Yellow 75% */
+  .marker-label-content.is-warning {
+    background: rgba(255, 214, 0, 0.75);
+  }
+  /* 주의 / 오류 — Accent-Orange 75% */
+  .marker-label-content.is-caution {
+    background: rgba(255, 146, 48, 0.75);
+  }
+  /* 심각 / 가동 — Accent-Red 75% */
+  .marker-label-content.is-critical {
+    background: rgba(255, 66, 69, 0.75);
+  }
+  /* 정상 / 미가동 — Accent-Green 75% */
+  .marker-label-content.is-success {
+    background: rgba(69, 227, 108, 0.75);
+  }
+  /* 기상특보 marquee — 동일 텍스트 2 회 렌더, translateX(-50%) 로 한 cycle 완성 (이음매 없음). */
+  @keyframes warning-marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(calc(-50% - 24px));
+    }
+  }
+
+  /* plain — bg / border 없음, 지도 자체 라벨처럼 글씨만. 흰 stroke 로 어떤 지도 배경에도 가독성 유지. */
+  .marker-label-content.is-plain {
+    background: transparent;
+    border: none;
+    padding: 0;
+    color: #001229;
+    font-weight: 700;
+    text-shadow:
+      -1px -1px 0 #FFF,
+      1px -1px 0 #FFF,
+      -1px 1px 0 #FFF,
+      1px 1px 0 #FFF,
+      0 0 3px rgba(255, 255, 255, 0.8);
+  }
+}
+
+/* CCTV 클러스터 목록 팝업 — 이벤트 패널과 같은 톤 (bg Neutral-800, hover Neutral-450).
+   ⚠️ @layer 밖에 둬야 한다. maplibre-gl.css 는 layer 없이 로드되고,
+      CSS 캐스케이드에서 layer 없는 규칙이 layer 안 규칙을 이긴다. */
+.cctv-cluster-popup .maplibregl-popup-content {
+  padding: 0;
+  border-radius: 12px;
+  border: 1px solid #1ea7ff;
+  background: #001a38;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+}
+.cctv-cluster-popup .maplibregl-popup-tip {
+  display: none;
+}
+.cctv-cluster-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  align-self: stretch;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.cctv-cluster-row:hover {
+  background: #1b4671;
+}
+/* 이미 재생 중인 CCTV — 이벤트 목록 활성 행과 같은 표시(Primary-light 테두리) + 다시 못 고름.
+   hover 배경(#1B4671)과 구분되도록 배경도 Primary 계열로 올린다. */
+.cctv-cluster-row.is-playing,
+.cctv-cluster-row.is-playing:hover {
+  border: 1px solid #42b8ff;
+  box-shadow: inset 0 0 0 2px #42b8ff;
+  background: rgba(66, 184, 255, 0.22);
+  cursor: default;
+  pointer-events: none;
+}
+.cctv-cluster-row.is-playing .cctv-cluster-row-name {
+  color: #42b8ff;
+}
+/* 순번 — Primary, B5 (14/500, line-height 16) */
+.cctv-cluster-row-index {
+  flex-shrink: 0;
+  color: #1ea7ff;
+  font-family: Roboto, system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 16px;
+}
+/* CCTV 명 — 넘치면 말줄임 */
+.cctv-cluster-row-name {
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: #fff;
+  font-family: Roboto, system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 16px;
+}
+
+/* 지도 팝업은 마커보다 위에 — reticle 등 일부 마커가 z-index 10 을 쓴다.
+   maplibre-gl.css 뒤에 로드될 수 있어 선택자를 한 단계 더 구체적으로 둔다. */
+.maplibregl-map .maplibregl-popup {
+  z-index: 20;
+}
+
+/* 지도 위 CCTV 영상 팝업 — 기본 흰 배경/꼬리 제거, 패널 톤으로. */
+.cctv-player-popup .maplibregl-popup-content {
+  padding: 0;
+  overflow: hidden;
+  border-radius: 10px;
+  border: 1px solid #003060;
+  background: #001a38;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+}
+.cctv-player-popup .maplibregl-popup-tip {
+  display: none;
+}
+
+/* 지도 위 CCTV 플레이어 — 드래그로 옮길 수 있는 절대배치 박스. */
+.cctv-player-popup-box {
+  overflow: hidden;
+  border-radius: 10px;
+  border: 1px solid #003060;
+  background: #001a38;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+}
+
+/* 개별 CCTV 마커 hover 툴팁 — 이름 전체 표시 (줄바꿈/말줄임 없음). */
+.cctv-tip-popup .maplibregl-popup-content {
+  padding: 5px 10px;
+  border-radius: 8px;
+  border: 1px solid #003060;
+  background: #001a38;
+  color: #fff;
+  font-family: Roboto, system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.2;
+  white-space: nowrap;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+}
+.cctv-tip-popup .maplibregl-popup-tip {
+  display: none;
+}
+
+/* 클러스터 목록에서 이름이 잘린 행 hover 시 뜨는 전체 이름 툴팁. */
+.cctv-row-tip {
+  position: fixed;
+  z-index: 4500;
+  padding: 5px 10px;
+  border-radius: 8px;
+  border: 1px solid #003060;
+  background: #001a38;
+  color: #fff;
+  font-family: Roboto, system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.2;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+}
+
+/* 지도 팝업 안 버튼 — 클릭 후 남는 포커스 링 제거 (하늘색/흰 외곽선). */
+.cctv-cluster-popup button,
+.cctv-player-popup button,
+.cctv-cluster-popup button:focus,
+.cctv-player-popup button:focus,
+.cctv-cluster-popup button:focus-visible,
+.cctv-player-popup button:focus-visible {
+  outline: none;
+  box-shadow: none;
+  -webkit-tap-highlight-color: transparent;
+}

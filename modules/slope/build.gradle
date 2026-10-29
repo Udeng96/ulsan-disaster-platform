@@ -1,0 +1,59 @@
+plugins {
+    id 'java'
+    id 'war'
+    id 'org.springframework.boot' version '3.4.0'
+    id 'io.spring.dependency-management' version '1.1.6'
+}
+
+group = 'com.eseict.ulsan'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // 관리지역 등급 엑셀 양식 다운로드·업로드 (.xlsx)
+    implementation 'org.apache.poi:poi-ooxml:5.3.0'
+
+    implementation 'org.flywaydb:flyway-core'
+    implementation 'org.flywaydb:flyway-database-postgresql'
+    runtimeOnly 'org.postgresql:postgresql'
+
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // WAR 를 executable (java -jar slope.war) 로도, 외부 톰캣 배포로도 쓸 수 있게
+    // 내장 톰캣을 provided 로 (외부 톰캣에 올릴 땐 컨테이너가 제공, executable 일 땐 fat war 에 포함)
+    providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+// 로컬 접속정보는 application-local.yml (git 밖) 에 있다. 프로파일을 application.yml 이 아니라
+// 여기서 켜는 이유 — application.yml 에 두면 그 파일이 WAR 에 실려 운영에서도 local 이 활성화되고,
+// WAR 안 application-local.yml 이 외부 운영 설정을 덮을 수 있다.
+tasks.named('bootRun') {
+    systemProperty 'spring.profiles.active', 'local'
+}
+
+// application-local.yml 은 WAR 에 넣지 않는다. 개발용 접속정보가 평문으로 들어 있어
+// 배포 산출물에 실리면 안 된다. bootRun 은 processResources 결과를 쓰므로 영향이 없다.
+tasks.withType(War).configureEach {
+    rootSpec.exclude('**/application-local.yml')
+}

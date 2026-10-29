@@ -1,0 +1,476 @@
+{
+  "common.region": [
+    {
+      "id": 1,
+      "name": "가상시설 1",
+      "gu": "DEMO",
+      "display_order": 1,
+      "code": "DEMO_1"
+    },
+    {
+      "id": 2,
+      "name": "가상시설 2",
+      "gu": "DEMO",
+      "display_order": 2,
+      "code": "DEMO_2"
+    },
+    {
+      "id": 3,
+      "name": "가상시설 3",
+      "gu": "DEMO",
+      "display_order": 3,
+      "code": "DEMO_3"
+    }
+  ],
+  "common.layer": [
+    {
+      "id": 1,
+      "code": "CCTV",
+      "name": "가상 CCTV",
+      "color": "#2563EB",
+      "display_order": 1,
+      "is_active": true
+    },
+    {
+      "id": 2,
+      "code": "PUMP_STATION",
+      "name": "가상 펌프장",
+      "color": "#2563EB",
+      "display_order": 2,
+      "is_active": true
+    },
+    {
+      "id": 3,
+      "code": "BROADCAST",
+      "name": "가상 방송",
+      "color": "#2563EB",
+      "display_order": 3,
+      "is_active": true
+    },
+    {
+      "id": 4,
+      "code": "SHELTER",
+      "name": "가상 쉼터",
+      "color": "#2563EB",
+      "display_order": 4,
+      "is_active": true
+    },
+    {
+      "id": 5,
+      "code": "AIR",
+      "name": "가상 대기",
+      "color": "#2563EB",
+      "display_order": 5,
+      "is_active": true
+    },
+    {
+      "id": 6,
+      "code": "STEEP_SLOPE",
+      "name": "가상 급경사지",
+      "color": "#2563EB",
+      "display_order": 6,
+      "is_active": true
+    },
+    {
+      "id": 7,
+      "code": "EARTHQUAKE",
+      "name": "가상 지진",
+      "color": "#2563EB",
+      "display_order": 7,
+      "is_active": true
+    },
+    {
+      "id": 8,
+      "code": "SIGNBOARD",
+      "name": "가상 전광판",
+      "color": "#2563EB",
+      "display_order": 8,
+      "is_active": true
+    }
+  ],
+  "pump.drainage_zone": [
+    {
+      "id": 1,
+      "name": "가상시설 1"
+    },
+    {
+      "id": 2,
+      "name": "가상시설 2"
+    },
+    {
+      "id": 3,
+      "name": "가상시설 3"
+    }
+  ],
+  "pump.pump_station": [
+    {
+      "id": 1,
+      "name": "가상시설 1",
+      "drainage_zone_id": 1,
+      "region_id": 1,
+      "lat": 0.01,
+      "lng": 0.01,
+      "address": "가상시설 1"
+    },
+    {
+      "id": 2,
+      "name": "가상시설 2",
+      "drainage_zone_id": 1,
+      "region_id": 1,
+      "lat": 0.02,
+      "lng": 0.02,
+      "address": "가상시설 2"
+    },
+    {
+      "id": 3,
+      "name": "가상시설 3",
+      "drainage_zone_id": 1,
+      "region_id": 1,
+      "lat": 0.03,
+      "lng": 0.03,
+      "address": "가상시설 3"
+    }
+  ],
+  "pump.pump_equipment": [
+    {
+      "id": 1,
+      "pump_station_id": 1,
+      "name": "가상시설 1",
+      "status_pattern": "ON_OFF",
+      "state": 1,
+      "value": null,
+      "is_available": true,
+      "is_displayed": true,
+      "category": "PUMP_GENERIC",
+      "priority": 1
+    },
+    {
+      "id": 2,
+      "pump_station_id": 1,
+      "name": "가상시설 2",
+      "status_pattern": "ON_OFF",
+      "state": 2,
+      "value": null,
+      "is_available": true,
+      "is_displayed": true,
+      "category": "PUMP_GENERIC",
+      "priority": 2
+    },
+    {
+      "id": 3,
+      "pump_station_id": 1,
+      "name": "가상시설 3",
+      "status_pattern": "ON_OFF",
+      "state": 3,
+      "value": null,
+      "is_available": true,
+      "is_displayed": true,
+      "category": "PUMP_GENERIC",
+      "priority": 3
+    }
+  ],
+  "shelter.cooling_shelter": [
+    {
+      "id": 1,
+      "name": "가상시설 1",
+      "road_address": "가상시설 1",
+      "parcel_detail": "가상시설 1",
+      "lat": 0.01,
+      "lng": 0.01,
+      "region_id": 1,
+      "facility_type": "DEMO",
+      "capacity": 1,
+      "weekday_open": "09:00",
+      "weekday_close": "09:00"
+    },
+    {
+      "id": 2,
+      "name": "가상시설 2",
+      "road_address": "가상시설 2",
+      "parcel_detail": "가상시설 2",
+      "lat": 0.02,
+      "lng": 0.02,
+      "region_id": 1,
+      "facility_type": "DEMO",
+      "capacity": 2,
+      "weekday_open": "09:00",
+      "weekday_close": "09:00"
+    },
+    {
+      "id": 3,
+      "name": "가상시설 3",
+      "road_address": "가상시설 3",
+      "parcel_detail": "가상시설 3",
+      "lat": 0.03,
+      "lng": 0.03,
+      "region_id": 1,
+      "facility_type": "DEMO",
+      "capacity": 3,
+      "weekday_open": "09:00",
+      "weekday_close": "09:00"
+    }
+  ],
+  "air.station": [
+    {
+      "id": 1,
+      "name": "가상시설 1",
+      "network_type": "DEMO",
+      "location": "가상시설 1",
+      "address": "가상시설 1",
+      "lat": 0.01,
+      "lng": 0.01,
+      "region_id": 1
+    },
+    {
+      "id": 2,
+      "name": "가상시설 2",
+      "network_type": "DEMO",
+      "location": "가상시설 2",
+      "address": "가상시설 2",
+      "lat": 0.02,
+      "lng": 0.02,
+      "region_id": 1
+    },
+    {
+      "id": 3,
+      "name": "가상시설 3",
+      "network_type": "DEMO",
+      "location": "가상시설 3",
+      "address": "가상시설 3",
+      "lat": 0.03,
+      "lng": 0.03,
+      "region_id": 1
+    }
+  ],
+  "broadcast.terminal": [
+    {
+      "terminal_code": "DEMO_1",
+      "name": "가상시설 1",
+      "comm_type": "DEMO",
+      "phone": "",
+      "address": "가상시설 1",
+      "lat": 0.01,
+      "lng": 0.01,
+      "installed_at": "2026-01-01",
+      "manufacturer": "DEMO_1",
+      "model": "DEMO_1",
+      "region_id": 1,
+      "id": 1,
+      "group_type": "GENERAL"
+    },
+    {
+      "terminal_code": "DEMO_2",
+      "name": "가상시설 2",
+      "comm_type": "DEMO",
+      "phone": "",
+      "address": "가상시설 2",
+      "lat": 0.02,
+      "lng": 0.02,
+      "installed_at": "2026-01-01",
+      "manufacturer": "DEMO_2",
+      "model": "DEMO_2",
+      "region_id": 1,
+      "id": 2,
+      "group_type": "GENERAL"
+    },
+    {
+      "terminal_code": "DEMO_3",
+      "name": "가상시설 3",
+      "comm_type": "DEMO",
+      "phone": "",
+      "address": "가상시설 3",
+      "lat": 0.03,
+      "lng": 0.03,
+      "installed_at": "2026-01-01",
+      "manufacturer": "DEMO_3",
+      "model": "DEMO_3",
+      "region_id": 1,
+      "id": 3,
+      "group_type": "GENERAL"
+    }
+  ],
+  "signboard.board": [
+    {
+      "name": "가상시설 1",
+      "address": "가상시설 1",
+      "lat": 0.01,
+      "lng": 0.01,
+      "region_id": 1,
+      "id": 1,
+      "host": "board-1.example.invalid"
+    },
+    {
+      "name": "가상시설 2",
+      "address": "가상시설 2",
+      "lat": 0.02,
+      "lng": 0.02,
+      "region_id": 1,
+      "id": 2,
+      "host": "board-2.example.invalid"
+    },
+    {
+      "name": "가상시설 3",
+      "address": "가상시설 3",
+      "lat": 0.03,
+      "lng": 0.03,
+      "region_id": 1,
+      "id": 3,
+      "host": "board-3.example.invalid"
+    }
+  ],
+  "broadcast.message_template": [
+    {
+      "title": "가상시설 1",
+      "content": "가상시설 1",
+      "id": 1
+    },
+    {
+      "title": "가상시설 2",
+      "content": "가상시설 2",
+      "id": 2
+    },
+    {
+      "title": "가상시설 3",
+      "content": "가상시설 3",
+      "id": 3
+    }
+  ],
+  "earthquake.instrument": [
+    {
+      "net": "DEMO_1",
+      "obs": "DEMO_1",
+      "station_code": "DEMO_1",
+      "install_location": "가상시설 1",
+      "axis": "X",
+      "model_name": "DEMO_1",
+      "serial_no": "",
+      "connection_type": "DEMO",
+      "id": 1
+    },
+    {
+      "net": "DEMO_2",
+      "obs": "DEMO_2",
+      "station_code": "DEMO_2",
+      "install_location": "가상시설 2",
+      "axis": "X",
+      "model_name": "DEMO_2",
+      "serial_no": "",
+      "connection_type": "DEMO",
+      "id": 2
+    },
+    {
+      "net": "DEMO_3",
+      "obs": "DEMO_3",
+      "station_code": "DEMO_3",
+      "install_location": "가상시설 3",
+      "axis": "X",
+      "model_name": "DEMO_3",
+      "serial_no": "",
+      "connection_type": "DEMO",
+      "id": 3
+    }
+  ],
+  "slope.steep_slope": [
+    {
+      "mgmt_no": "DEMO_1",
+      "name": "가상시설 1",
+      "legal_dong": "가상시설 1",
+      "legal_dong_code": "DEMO_1",
+      "jibun": "가상시설 1",
+      "lat": 0.01,
+      "lng": 0.01,
+      "region_id": 1,
+      "grade": "A",
+      "org": "가상시설 1",
+      "department": "가상시설 1",
+      "remark": "가상시설 1",
+      "id": 1
+    },
+    {
+      "mgmt_no": "DEMO_2",
+      "name": "가상시설 2",
+      "legal_dong": "가상시설 2",
+      "legal_dong_code": "DEMO_2",
+      "jibun": "가상시설 2",
+      "lat": 0.02,
+      "lng": 0.02,
+      "region_id": 1,
+      "grade": "A",
+      "org": "가상시설 2",
+      "department": "가상시설 2",
+      "remark": "가상시설 2",
+      "id": 2
+    },
+    {
+      "mgmt_no": "DEMO_3",
+      "name": "가상시설 3",
+      "legal_dong": "가상시설 3",
+      "legal_dong_code": "DEMO_3",
+      "jibun": "가상시설 3",
+      "lat": 0.03,
+      "lng": 0.03,
+      "region_id": 1,
+      "grade": "A",
+      "org": "가상시설 3",
+      "department": "가상시설 3",
+      "remark": "가상시설 3",
+      "id": 3
+    }
+  ],
+  "owl.disaster_type": [
+    {
+      "id": 1,
+      "code": "6",
+      "name": "가상 구조",
+      "display_order": 1
+    },
+    {
+      "id": 2,
+      "code": "2",
+      "name": "가상 사회재난",
+      "display_order": 2
+    },
+    {
+      "id": 3,
+      "code": "1",
+      "name": "가상 자연재난",
+      "display_order": 3
+    },
+    {
+      "id": 4,
+      "code": "5",
+      "name": "가상 훈련",
+      "display_order": 4
+    }
+  ],
+  "owl.disaster_type_detail": [
+    {
+      "id": 1,
+      "code": "601",
+      "name": "가상 이벤트",
+      "group_code": "6",
+      "display_order": 1
+    },
+    {
+      "id": 2,
+      "code": "201",
+      "name": "가상 이벤트",
+      "group_code": "2",
+      "display_order": 2
+    },
+    {
+      "id": 3,
+      "code": "101",
+      "name": "가상 이벤트",
+      "group_code": "1",
+      "display_order": 3
+    },
+    {
+      "id": 4,
+      "code": "501",
+      "name": "가상 이벤트",
+      "group_code": "5",
+      "display_order": 4
+    }
+  ]
+}

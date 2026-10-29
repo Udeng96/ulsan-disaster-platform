@@ -1,0 +1,38 @@
+.admin-firewall .admin-asset-popup {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 60;
+  display: flex;
+  box-sizing: border-box;
+  width: 590px;
+  padding: 20px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  border: 2px solid #23609d;
+  border-radius: 8px;
+  background: #0d3868;
+  box-shadow: 0 6px 20px #071e34;
+  color: #fff;
+  font-family: Roboto, sans-serif;
+}
+.admin-asset-popup-header { display: flex; justify-content: space-between; align-items: center; align-self: stretch; }
+.admin-asset-popup-header h3 { margin: 0; font-size: 22px; font-weight: 600; line-height: 26px; }
+.admin-asset-popup-header button {
+  display: flex; width: 20px; height: 20px; padding: 0; justify-content: center; align-items: center;
+  border: 0; border-radius: 4px; background: transparent; color: #b8c8d6; cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.admin-asset-popup-header button:hover { background: rgba(255, 255, 255, 0.16); color: #fff; }
+.admin-asset-popup-content {
+  display: flex; height: 482px; overflow-y: auto; overflow-x: hidden;
+  align-items: flex-start; gap: 8px; align-self: stretch;
+}
+.admin-asset-popup-content p { margin: 0; padding: 8px 0; color: #b8c8d6; font-size: 14px; font-weight: 500; line-height: 16px; }
+.admin-asset-popup-fields { display: flex; flex: 1; min-width: 0; flex-direction: column; gap: 8px; margin: 0; }
+.admin-asset-popup-row { display: flex; padding: 8px 0; align-items: center; gap: 20px; align-self: stretch; }
+.admin-asset-popup-row dt { width: 96px; flex-shrink: 0; color: #b8c8d6; font-size: 15px; font-weight: 500; line-height: 16px; overflow-wrap: anywhere; }
+.admin-asset-popup-row dd { display: flex; align-items: center; gap: 4px; flex: 1 0 0; min-width: 0; margin: 0; color: #fff; font-size: 14px; font-weight: 500; line-height: 16px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.admin-asset-popup-header button:focus-visible, .admin-asset-popup-content:focus-visible { outline: 1px solid #b8c8d6; outline-offset: 2px; }

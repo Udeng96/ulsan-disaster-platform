@@ -1,0 +1,22 @@
+/* 전역 기본 — html/body 크기, 바탕, 글꼴 */
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background: var(--color-black);
+  }
+
+  /* leaflet + Tailwind v4 충돌 fix: preflight 의 img max-width:100% 가
+     leaflet tile img 크기를 깨뜨림. leaflet container 안 img 만 reset */
+  .leaflet-container img {
+    max-width: none;
+  }
+}

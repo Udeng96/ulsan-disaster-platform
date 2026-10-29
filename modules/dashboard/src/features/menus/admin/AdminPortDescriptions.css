@@ -1,0 +1,80 @@
+.admin-port-descriptions {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  align-self: stretch;
+  flex-shrink: 0;
+  font-family: Roboto;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 16px;
+}
+.admin-port-table {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: 1 0 0;
+  align-self: stretch;
+  min-width: 0;
+}
+.admin-port-table-header,
+.admin-port-table-row {
+  display: grid;
+  grid-template-columns: 62px minmax(0, 1fr) 76px 100px;
+  box-sizing: border-box;
+  padding: 4px;
+  align-items: center;
+  gap: 4px;
+  align-self: stretch;
+}
+.admin-port-table-header {
+  font-size: 13px;
+  height: 26px;
+  flex: 1 0 0;
+  color: #8fb0d0;
+  border-bottom: 1px solid #1b4671;
+}
+.admin-port-table-row {
+  height: 26px;
+  flex-shrink: 0;
+  color: #fff;
+  border-bottom: 1px dashed #1b4671;
+}
+.admin-port-table-row.has-traffic {
+  border-radius: 6px;
+  background: var(--color-neutral-400, #1b4671);
+}
+.admin-port-col-name,
+.admin-port-col-purpose,
+.admin-port-col-status,
+.admin-port-col-traffic {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.admin-port-col-name { min-width: 0; }
+.admin-port-col-purpose {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.admin-port-col-status { min-width: 0; }
+.admin-port-col-traffic {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 4px;
+}
+.admin-port-table-row .admin-port-col-name { color: #4da3ff; }
+.admin-port-table-row.is-idle { color: #557795; }
+/* 오른쪽은 연결 대상 이름이 길어 용도 열에 더 많은 폭을 배정한다. */
+.admin-port-table.is-right .admin-port-table-header,
+.admin-port-table.is-right .admin-port-table-row { grid-template-columns: 44px minmax(0, 1fr) 76px 100px; }
+.admin-port-traffic-value {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.admin-port-traffic-value svg { flex-shrink: 0; }
+.admin-port-traffic-value.is-down { color: #5cc6ff; }
+.admin-port-traffic-value.is-up { color: #f2d230; }

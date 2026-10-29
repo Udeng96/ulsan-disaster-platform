@@ -1,0 +1,600 @@
+/* 디자인 토큰 — 한 곳. Tailwind v4 @theme 이라 bg-primary, text-h3, shadow-card 처럼 바로 클래스로 쓴다. */
+
+@theme {
+  --font-sans: 'Roboto', system-ui, -apple-system, 'Apple SD Gothic Neo', 'Segoe UI', 'Malgun Gothic', sans-serif;
+  --font-display: 'Gmarket Sans', var(--font-sans);
+
+  /* Typography — size + weight */
+  --text-h1: 72px;
+  --text-h1--font-weight: 700;
+  --text-h1--line-height: 74px;
+  --text-h1--letter-spacing: 3.6px;
+  --text-h2: 40px;
+  --text-h2--font-weight: 700;
+  --text-h2--line-height: 40px;
+  --text-h3: 30px;
+  --text-h3--font-weight: 700;
+  --text-h4: 22px;
+  --text-h4--font-weight: 700;
+  --text-h5: 30px;
+  --text-h5--font-weight: 600;
+  --text-h6: 24px;
+  --text-h6--font-weight: 600;
+  --text-b1: 22px;
+  --text-b1--font-weight: 600;
+  --text-b1--line-height: 26px;
+  --text-b2: 18px;
+  --text-b2--font-weight: 500;
+  --text-b2--line-height: 20px;
+  --text-b3: 16px;
+  --text-b3--font-weight: 500;
+  --text-b3--line-height: 20px;
+  --text-b4: 15px;
+  --text-b4--font-weight: 600;
+  --text-b5: 14px;
+  --text-b5--font-weight: 500;
+  --text-b5--line-height: 16px;
+  --text-b6: 12px;
+  --text-b6--font-weight: 600;
+
+  /* Primary */
+  --color-primary: #1EA7FF;
+  --color-primary-light: #42B8FF;
+  --color-primary-dark: #0D8AE0;
+
+  /* Neutral */
+  --color-neutral-50: #F4F8FB;
+  --color-neutral-100: #DCE6EE;
+  --color-neutral-200: #B8C8D6;
+  --color-neutral-300: #7F97AF;
+  --color-neutral-400: #406387;
+  --color-neutral-450: #1B4671; /* 패널/리스트 그리드 border + 어두운 bg 공통 톤 */
+  --color-neutral-500: #003060;
+  --color-neutral-600: #002A54;
+  --color-neutral-700: #002247;
+  --color-neutral-800: #001A38;
+  --color-neutral-900: #001229;
+  --color-neutral-1000: #000B1A;
+
+  /* Accent */
+  --color-accent-blue: #0091FF;
+  --color-accent-brown: #B78A66;
+  --color-accent-green: #45E36C;
+  --color-accent-indigo: #6D7CFF;
+  --color-accent-mint: #00DAC3;
+  --color-accent-orange: #FF9230;
+  --color-accent-pink: #FF375F;
+  --color-accent-purple: #DB34F2;
+  --color-accent-red: #FF4245;
+  --color-accent-teal: #00D2E0;
+  --color-accent-yellow: #FFD600;
+}
+
+/* ── 묶음 토큰 — 색 하나로 안 되는 것 (그림자·그라데이션·글라스 카드) ──
+   새 코드는 여기 이름으로만 쓴다. styles/designTokens.ts 는 옛 코드용 (메뉴를 새로 만들면서 없앤다). */
+@theme {
+  --shadow-panel-header: 0 3px 5px 0 rgba(0, 0, 0, 0.15);
+  --shadow-glass: 0 4px 12px 0 rgba(255, 255, 255, 0.24) inset, 0 -8px 26px 0 rgba(255, 255, 255, 0.30) inset, 0 8px 24px 0 rgba(0, 0, 0, 0.20);
+  --shadow-card: 0 3.375px 5.063px 0 rgba(0, 0, 0, 0.06), 0 0 11.25px 0 rgba(0, 0, 0, 0.04);
+
+  --color-panel-header-from: #0E3E6E;
+  --color-panel-header-to: #002245;
+  --color-panel-body: rgba(64, 96, 128, 0.5);
+  --color-panel-inner: rgba(28, 28, 28, 0.15);
+  --color-line-highlight: rgba(175, 205, 238, 0.15); /* 패널 헤더 테두리 */
+  --color-line-glass: rgba(255, 255, 255, 0.15); /* 글라스 카드 테두리 */
+  --color-line-pill: rgba(255, 255, 255, 0.25); /* 상태 pill 테두리 */
+  --color-line-dark: rgba(0, 0, 0, 0.25); /* 어두운 패널 테두리 */
+  --color-text-stroke: rgba(0, 42, 84, 0.25);
+
+  --color-ice: #E0F2FF; /* 체크박스·라디오 바탕 */
+  --color-tab-idle: #9BADC0; /* 서브탭 꺼진 글씨 */
+  --color-reticle: rgba(137, 37, 203, 0.85); /* CCTV 순번 (지도 reticle 과 같은 색) */
+  --color-event: #DE0602; /* 이벤트 활성 순번 */
+  --color-glass-light: #ADADAD; /* 둥근 확대 버튼 바탕 */
+  --color-glass-dark: #737373; /* 네모 확대 버튼 바탕 */
+
+  --color-accent-red-light: #FF6A6C; /* 빨간 버튼 hover */
+  --color-icon: #F3F4F6; /* 닫기 등 아이콘 */
+  --color-tile-group: #FCFCFC; /* 지도 종류 버튼 묶음 바탕 */
+
+  --font-headline: 'Do Hyeon', var(--font-sans); /* 헤더·서브탭 글씨 */
+
+  --shadow-tab-active: 3px 3px 5px 0 rgba(255, 255, 255, 0.33) inset;
+  --shadow-toast: 0 6px 20px rgba(0, 0, 0, 0.25);
+  --shadow-tile-btn: 0 1px 2px 0 rgba(0, 0, 0, 0.12); /* 지도 종류 버튼 */
+}
+
+/* 패널 헤더 띠 — 위에서 아래로 진한 navy */
+@utility bg-panel-header {
+  background-image: linear-gradient(180deg, var(--color-panel-header-from) 0%, var(--color-panel-header-to) 100%);
+}
+
+/* 글라스 카드 — 반투명 흰 바탕 + 1px 흰 테두리 + 안쪽 빛 */
+@utility glass-card {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--color-line-glass);
+  box-shadow: var(--shadow-glass);
+}
+
+/* 어두운 패널 바탕 (우측 배수펌프장 등) */
+@utility bg-panel-body {
+  background: var(--color-panel-body);
+  background-blend-mode: plus-darker;
+}
+@utility bg-panel-inner {
+  background: var(--color-panel-inner);
+  background-blend-mode: plus-darker;
+}
+
+/* 글라스 카드 안 글씨 윤곽선 — 큰 글씨 1px, 작은 글씨 0.84px */
+@utility text-stroke {
+  -webkit-text-stroke: 1px var(--color-text-stroke);
+}
+@utility text-stroke-thin {
+  -webkit-text-stroke: 0.84px var(--color-text-stroke);
+}
+
+/* 긴 글씨 흘리기 (기상특보 등) — 같은 글씨를 두 번 이어 붙여 왼쪽으로 반 바퀴 */
+@theme {
+  --animate-marquee: marquee 18s linear infinite;
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(calc(-50% - 24px));
+    }
+  }
+  /* 메뉴 버튼 테두리 빛·반짝임 회전 — 고른 버튼에만. 회전(transform)만 바꿔 배치를 다시 계산하지 않는다.
+     가운데 맞춤은 translate 속성(-translate-1/2)이 따로 맡아서 rotate 만 돌린다. */
+  --animate-menu-spin: menu-spin 4s linear infinite;
+  @keyframes menu-spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  /* 급경사지 머리 줄(서브탭·요약 바) — 옛 화면과 같은 3단계.
+     들어갈 때: ① 자리 높이 0→168 (0.5초, 본문이 위에서 짧아짐) ② 0.7초부터 지도 오른쪽 이동(state SLOPE_IN_MS) ③ 1.05초에 내용이 위에서 내려오며 나타남.
+     나갈 때: ① 내용이 위로 사라짐(0.45초) ② 0.48초부터 자리 닫힘(0.5초) ③ 지도 오른쪽 이동(SLOPE_OUT_MS).
+     자리 높이는 본문 높이와 같이 바뀌어야 해서 height 를 움직인다 (10-19 사용자 결정 '높이 그대로') */
+  --animate-slope-open: slope-open 0.5s cubic-bezier(0.33, 1, 0.68, 1) backwards;
+  --animate-slope-close: slope-close 0.5s cubic-bezier(0.33, 1, 0.68, 1) 0.48s forwards;
+  --animate-slope-in: slope-in 0.4s cubic-bezier(0.33, 1, 0.68, 1) 1.05s backwards;
+  --animate-slope-out: slope-out 0.45s cubic-bezier(0.33, 1, 0.68, 1) forwards;
+  @keyframes slope-open {
+    from {
+      height: 0;
+    }
+    to {
+      height: 168px;
+    }
+  }
+  /* 관리자 머리 줄(서브탭·공지 줄) — 급경사지와 같은 방식 (사용자 10-23 '급경사지하고 비슷하게').
+     들어갈 때: ① 자리 높이 0→162 (0.5초, 이전 본문이 위에서 짧아짐) ② 0.5초에 본문이 관리자로 바뀌고(state ADMIN_IN_MS) 머리 내용만 위에서 내려옴.
+     나갈 때: 급경사지와 같음 — 내용이 위로 사라지고(slope-out) 0.48초부터 자리 닫힘, 다 닫힌 뒤 본문이 바뀜 */
+  --animate-admin-open: admin-open 0.5s cubic-bezier(0.33, 1, 0.68, 1) backwards;
+  --animate-admin-close: admin-close 0.5s cubic-bezier(0.33, 1, 0.68, 1) 0.48s forwards;
+  --animate-admin-in: slope-in 0.4s cubic-bezier(0.33, 1, 0.68, 1) 0.5s backwards;
+  /* 관리자 본문 — 자리가 다 열린 뒤 그려지므로 바로 내려옴 (머리 내용과 같은 때). 이전 본문은 다 열리기 전 0.3초 동안 흐려지고, 관리자에서 돌아오면 0.3초 동안 나타남 */
+  --animate-admin-body-in: slope-in 0.4s cubic-bezier(0.33, 1, 0.68, 1) backwards;
+  --animate-body-fade-out: body-fade 0.3s ease-out 0.2s reverse forwards;
+  --animate-body-fade-in: body-fade 0.3s ease-out;
+  /* 관리자에서 급경사지로 갈 때 지도 본문 — 머리 내용(위에서 내려옴)과 반대로 아래에서 올라옴 */
+  --animate-body-rise: body-rise 0.3s cubic-bezier(0.33, 1, 0.68, 1);
+  @keyframes body-rise {
+    from {
+      transform: translateY(10px);
+      opacity: 0;
+    }
+  }
+  @keyframes body-fade {
+    from {
+      opacity: 0;
+    }
+  }
+  @keyframes admin-open {
+    from {
+      height: 0;
+    }
+    to {
+      height: 162px;
+    }
+  }
+  @keyframes admin-close {
+    from {
+      height: 162px;
+    }
+    to {
+      height: 0;
+    }
+  }
+  /* 지도에서 고른 CCTV 5개 — 바뀔 때만 두 번 반짝인 뒤 가만히 (수정사항 4, 10-20 사용자 결정 '둘 다') */
+  --animate-blink-twice: blink-twice 1.2s ease-in-out;
+  @keyframes blink-twice {
+    0%,
+    50%,
+    100% {
+      opacity: 1;
+    }
+    25%,
+    75% {
+      opacity: 0.15;
+    }
+  }
+  /* 메뉴끼리 바꿀 때 오른쪽 패널 — 새 패널이 오른쪽에서 밀려 들어와 이전 패널을 덮는다 (옛 panel-cross-fade-in, 10-19 사용자 결정) */
+  --animate-panel-in: panel-in 0.35s cubic-bezier(0.33, 1, 0.68, 1);
+  @keyframes panel-in {
+    from {
+      transform: translateX(100%);
+    }
+  }
+  @keyframes slope-close {
+    from {
+      height: 168px;
+    }
+    to {
+      height: 0;
+    }
+  }
+  @keyframes slope-out {
+    to {
+      transform: translateY(-10px);
+      opacity: 0;
+    }
+  }
+  @keyframes slope-in {
+    from {
+      transform: translateY(-10px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  /* 관리자 방화벽 상세 팝업 — 유형별 내역은 나타나기, 자산 대장은 아래에서 올라오기 (예제 fwfade·fwslide, 10-22) */
+  --animate-fw-fade: fw-fade 0.15s ease-out;
+  --animate-fw-slide: fw-slide 0.2s ease-out;
+  @keyframes fw-fade {
+    from {
+      opacity: 0;
+    }
+  }
+  @keyframes fw-slide {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+  }
+  --shadow-modal: 0 12px 48px 0 rgba(0, 0, 0, 0.24), 0 0 40px 0 rgba(0, 0, 0, 0.08);
+  --color-modal-line: rgba(255, 255, 255, 0.2);
+  --color-forecast-row: rgba(48, 56, 64, 0.16); /* 시간별 예보 줄 바탕 */
+  --color-header-warning: #F00000; /* 헤더 특보 글씨 */
+  --color-toast-ok: #2DE76E; /* 레이더 갱신 알림 글씨 */
+  --color-neutral-100-dim: rgba(220, 230, 238, 0.85); /* 계측기 설명 글씨 */
+  /* 지진 진도 I~IX 막대·라벨 바탕 */
+  --color-intensity-1: #FFFFFF;
+  --color-intensity-2: #A5E2FF;
+  --color-intensity-3: #92D14E;
+  --color-intensity-4: #FFFD00;
+  --color-intensity-5: #FFBA00;
+  --color-intensity-6: #FE0200;
+  --color-intensity-7: #A52476;
+  --color-intensity-8: #611F21;
+  --color-intensity-9: #502700;
+}
+
+/* 좌측 날씨 카드 바탕 — 날씨 그림(contain) + 패널 바탕(cover) 위에 navy 베일 두 겹 */
+@utility bg-weather-card {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    border-radius: inherit;
+    background:
+      linear-gradient(transparent, transparent) center / contain no-repeat,
+      linear-gradient(transparent, transparent) center / cover no-repeat;
+    background-blend-mode: multiply, normal;
+  }
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-radius: inherit;
+    background:
+      linear-gradient(180deg, rgba(0, 18, 41, 0.35) 0%, rgba(0, 18, 41, 0.15) 60%),
+      linear-gradient(242deg, rgba(14, 62, 110, 0.72) 14.24%, rgba(0, 34, 69, 0.85) 88.49%);
+  }
+  & > * {
+    position: relative;
+    z-index: 2;
+  }
+}
+
+/* 메뉴 버튼 (264×104) 안쪽 알약 — 평소 navy 볼록, 고르면 파란 그라데이션 + 빛.
+   회전하는 테두리 빛·반짝임(menu-glow·menu-shimmer)은 고른 버튼에만 보이고 4초에 한 바퀴 돈다 (animate-menu-spin). */
+@utility bg-menu-idle {
+  background: linear-gradient(176.15deg, var(--color-panel-header-from) 7.84%, var(--color-panel-header-to) 91.78%);
+  border: 1px solid var(--color-line-highlight);
+  box-shadow:
+    0 3px 5px 0 rgba(0, 0, 0, 0.15),
+    inset -3px -3px 5px 0 rgba(0, 0, 0, 0.44),
+    inset 3px 3px 5px 0 rgba(255, 255, 255, 0.33);
+}
+@utility bg-menu-active {
+  background: linear-gradient(180deg, var(--color-primary-light) 10%, var(--color-primary-dark) 90%);
+  box-shadow: 12px -6px 24px 0 rgba(255, 255, 255, 0.5);
+  border: none;
+}
+@utility bg-menu-glow {
+  background: conic-gradient(from 0deg, transparent 0deg, transparent 70deg, rgba(255, 255, 255, 0.95) 90deg, transparent 110deg, transparent 360deg);
+}
+@utility bg-menu-shimmer {
+  background: radial-gradient(45% 45% at 65% 50%, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0.15) 40%, transparent 70%);
+}
+
+/* 작은 움직임 — 옛 화면 시간 그대로. 색·테두리·그림자·투명도만 바꾼다 (배치 계산 없음).
+   transition-ui 0.15초(버튼·입력칸), transition-ui-slow 0.2초(재난 모드 버튼·스위치 바탕·CCTV 손잡이),
+   transition-turn 0.2초 회전·이동(펼침 화살표·스위치 동그라미 — Tailwind 의 rotate·translate 속성) */
+@utility transition-ui {
+  transition-property: color, background-color, border-color, box-shadow, opacity;
+  transition-duration: 0.15s;
+  transition-timing-function: ease;
+}
+@utility transition-ui-slow {
+  transition-property: color, background-color, border-color, box-shadow, opacity;
+  transition-duration: 0.2s;
+  transition-timing-function: ease;
+}
+@utility transition-turn {
+  transition-property: transform, rotate, translate;
+  transition-duration: 0.2s;
+  transition-timing-function: ease;
+}
+
+/* 열고 닫기 — 이벤트 패널·버튼이 왼쪽 위로 작아지며 흐려진다 (옛 화면 0.35초).
+   Tailwind 의 scale-* 은 scale 속성이라 그 속성을 전환한다. visibility 는 닫힐 때 끝에서 숨겨 누를 수 없게. */
+@utility transition-pop {
+  transition-property: opacity, scale, transform, visibility;
+  transition-duration: 0.35s;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 확대 창 열고 닫기 — 가운데에서 5%↔100% (옛 화면 0.45초, 흐려짐 없음). 시간은 useKept 의 ZOOM_MS 와 같게.
+   열 때는 starting:scale-5 로 처음 그려질 때부터 시작한다. */
+@utility transition-zoom {
+  transition-property: scale, transform;
+  transition-duration: 0.45s;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 지도 오른쪽 움직임 — CCTV 접기·펼치기, 메뉴 바꿀 때 CCTV·메뉴 패널 (옛 화면 0.45초). 시간은 SLIDE_MS 와 같게 */
+@utility transition-slide {
+  transition-property: translate, transform;
+  transition-duration: 0.45s;
+  transition-timing-function: cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+/* 급경사지 CCTV 줄였다 늘리기(640↔512) — 옛 화면과 같게 폭을 움직인다. 배치 계산이 있지만 CCTV 칸 안(contain)에서만 */
+@utility transition-resize {
+  transition-property: width, grid-template-columns;
+  transition-duration: 0.45s;
+  transition-timing-function: cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+/* 급경사지 단계별 발령 막대 — 기간을 바꿔 건수가 달라지면 0.8초 동안 늘고 준다 (옛 slope-stats-bar-fill).
+   옆 건수 글자가 막대 끝을 따라가야 해서 폭을 움직인다. 막대 4개뿐이라 배치 계산이 가볍다 */
+@utility transition-fill {
+  transition-property: width;
+  transition-duration: 0.8s;
+  transition-timing-function: ease;
+}
+
+/* 재난 예·경보 패널 밀려 들어오고 나가기 — 0.6초, 시간은 state.ts DISASTER_MS 와 같게 */
+@utility transition-overlay {
+  transition-property: translate, transform;
+  transition-duration: 0.6s;
+  /* 천천히 시작해 천천히 멈춤 — 처음에 확 움직이면 휘릭 느낌 (10-19 사용자) */
+  transition-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* 얇은 스크롤바 (목록) — 흰 25% 손잡이 6px */
+@utility scroll-slim {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
+  scrollbar-gutter: stable;
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 99px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 8px;
+  }
+}
+
+/* 밝은 팝업 버튼 (컬러 피커) */
+@theme {
+  --shadow-button-hover: 0 2px 2px 0 rgba(0, 0, 0, 0.04), 0 4px 8px 0 rgba(0, 0, 0, 0.08);
+  --color-line-faint: rgba(255, 255, 255, 0.08); /* 목록 머리 아래 선 */
+}
+
+/* 급경사지 */
+@theme {
+  --color-slope-label: #8AADD0; /* 요약 바 제목 글씨 */
+  --color-row-dim: rgba(28, 28, 28, 0.12); /* 목록 줄 바탕 */
+  --color-row-hover: rgba(120, 120, 128, 0.16); /* 목록 줄 마우스 올림·선택 */
+  --shadow-date-picker: 0 5px 12px 0 rgba(0, 0, 0, 0.14);
+  --color-tooltip: rgba(0, 26, 56, 0.9); /* 막대 위 건수 */
+}
+
+/* 지진가속도 */
+@theme {
+  --color-eq-divider: rgba(185, 206, 232, 0.6); /* 채널 줄 위 선 */
+  --color-eq-level: rgba(255, 255, 255, 0.1); /* 진도 글자 칸 바탕 */
+}
+
+/* 상시계측 지역 탭 — 평소 navy 볼록, 고르면 파란 그라데이션 + 흰 테두리 */
+@utility bg-area-tab {
+  background: linear-gradient(169deg, #36699B 7.84%, #16375A 91.78%);
+  border: 1px solid var(--color-line-highlight);
+  box-shadow: var(--shadow-panel-header);
+}
+@utility bg-area-tab-on {
+  background: linear-gradient(180deg, #3BA7E8 10%, #1B5C9E 90%);
+  border: 1px solid #FFFFFF;
+  box-shadow: var(--shadow-panel-header);
+}
+
+/* 재난 예·경보 */
+@theme {
+  --color-accent-indigo-light: #919CFF; /* 송출 버튼 hover */
+  --color-toast-success: #22C55E; /* 성공 알림 바탕 */
+  --color-mode-stroke: rgba(13, 138, 224, 0.5); /* 고른 모드 버튼 글씨 윤곽 */
+  --shadow-mode-on: 0 0 20px 0 rgba(30, 167, 255, 0.2), 0 6px 12px 0 rgba(0, 0, 0, 0.12); /* 고른 모드 버튼 */
+  --color-ghost-text: #D7E2EC; /* 초기화·미리듣기 버튼 글씨 */
+  --color-chip-text: #E8E8ED; /* 템플릿 칩 글씨 */
+}
+
+/* 이벤트(부엉이) */
+@theme {
+  --shadow-event-button: 0 4px 16px 0 rgba(0, 0, 0, 0.12); /* 지도 위 '이벤트' 버튼 */
+  --color-token: rgba(177, 190, 233, 0.25); /* 검색 조건 토큰 바탕 */
+  --color-token-hover: rgba(198, 209, 245, 0.35);
+  --color-token-x: rgba(232, 232, 237, 0.3); /* 토큰 ✕ 테두리 */
+  --color-event-detail: rgba(20, 20, 20, 0.4); /* 펼친 상세 내용 바탕 */
+  --color-event-detail-line: rgba(20, 20, 20, 0.2);
+}
+
+/* 주소 검색 */
+@theme {
+  --shadow-search: 0 4px 20px 0 rgba(0, 0, 0, 0.12), 0 4px 8px 0 rgba(0, 0, 0, 0.08); /* 펼친 검색창 */
+}
+
+/* CCTV */
+@theme {
+  --shadow-cctv-main: inset 0 0 0 0.947px rgba(255, 255, 255, 0.2); /* 큰 칸 테두리 (자리 차지 없이) */
+}
+
+/* Administrator illustrations and device panels: exact colour primitives. */
+:root {
+  --color-admin-0c1117: #0C1117;
+  --color-admin-14181d: #14181D;
+  --color-admin-4da3ff: #4DA3FF;
+  --color-admin-rgba-77-163-255-6: rgba(77,163,255,.6);
+  --color-admin-7fb2e8: #7FB2E8;
+  --color-admin-rgba-77-163-255-25: rgba(77,163,255,.25);
+  --color-admin-rgba-77-163-255-0-6: rgba(77,163,255,0.6);
+  --color-admin-rgba-77-163-255-0-25: rgba(77,163,255,0.25);
+  --color-admin-8fa5bb: #8FA5BB;
+  --color-admin-rgba-66-184-255-6: rgba(66,184,255,.6);
+  --color-admin-rgba-66-184-255-0-6: rgba(66,184,255,0.6);
+  --color-admin-182a46: #182A46;
+  --color-admin-0a1224: #0A1224;
+  --color-admin-191626: #191626;
+  --color-admin-372e03: #372E03;
+  --color-admin-f2c549: #F2C549;
+  --color-admin-8fb0d0: #8FB0D0;
+  --color-admin-182e19: #182E19;
+  --color-admin-86e171: #86E171;
+  --color-admin-330f13: #330F13;
+  --color-admin-rgba-255-214-0-0-15: rgba(255,214,0,0.15);
+  --color-admin-rgba-69-227-108-0-15: rgba(69,227,108,0.15);
+  --color-admin-rgba-27-70-113-2: rgba(27,70,113,.2);
+  --color-admin-rgba-255-0-0-0-3: rgba(255,0,0,0.3);
+  --color-admin-ff0000: #FF0000;
+  --color-admin-rgba-27-70-113-0-2: rgba(27,70,113,0.2);
+  --color-admin-0a1830: #0A1830;
+  --color-admin-rgba-100-160-230-28: rgba(100,160,230,.28);
+  --color-admin-rgba-100-160-230-0-28: rgba(100,160,230,0.28);
+  --color-admin-5dbb63: #5DBB63;
+  --color-admin-rgba-42-74-70-0-9: rgba(42,74,70,0.9);
+  --color-admin-5b8fe0: #5B8FE0;
+  --color-admin-rgba-38-60-108-0-9: rgba(38,60,108,0.9);
+  --color-admin-ead140: #EAD140;
+  --color-admin-rgba-66-70-60-0-9: rgba(66,70,60,0.9);
+  --color-admin-8c9bb5: #8C9BB5;
+  --color-admin-2b3956: #2B3956;
+  --color-admin-b4c2d9: #B4C2D9;
+  --color-admin-13213f: #13213F;
+  --color-admin-3a5a91: #3A5A91;
+  --color-admin-6fa8ff: #6FA8FF;
+  --color-admin-eb9b3a: #EB9B3A;
+  --color-admin-3a2510: #3A2510;
+  --color-admin-3f5f8f: #3F5F8F;
+  --color-admin-c8d6ea: #C8D6EA;
+  --color-admin-5e6e8c: #5E6E8C;
+  --color-admin-3a353b: #3A353B;
+  --color-admin-e8963a: #E8963A;
+  --color-admin-f2d23a: #F2D23A;
+  --color-admin-6cd4ff: #6CD4FF;
+  --color-admin-rgba-13-31-60-98: rgba(13,31,60,.98);
+  --color-admin-rgba-100-160-230-4: rgba(100,160,230,.4);
+  --color-admin-rgba-77-163-255-35: rgba(77,163,255,.35);
+  --color-admin-rgba-100-160-230-0-4: rgba(100,160,230,0.4);
+  --color-admin-rgba-13-31-60-0-98: rgba(13,31,60,0.98);
+  --color-admin-rgba-0-0-0-0-5: rgba(0,0,0,0.5);
+  --color-admin-rgba-77-163-255-0-35: rgba(77,163,255,0.35);
+  --color-admin-5a708a: #5A708A;
+  --color-admin-rgba-13-31-60-97: rgba(13,31,60,.97);
+  --color-admin-rgba-13-31-60-0-97: rgba(13,31,60,0.97);
+  --color-admin-ffc53d: #FFC53D;
+  --color-admin-3a2e00: #3A2E00;
+  --color-admin-7cc8ff: #7CC8FF;
+  --color-admin-171d23: #171D23;
+  --color-admin-20262e: #20262E;
+  --color-admin-3f5568: #3F5568;
+  --color-admin-0e1319: #0E1319;
+  --color-admin-3a444e: #3A444E;
+  --color-admin-1a2028: #1A2028;
+  --color-admin-5cc46a: #5CC46A;
+  --color-admin-f2d230: #F2D230;
+  --color-admin-73ca62: #73CA62;
+  --color-admin-0f1319: #0F1319;
+  --color-admin-5a6672: #5A6672;
+  --color-admin-000000: #000;
+  --color-admin-252c33: #252C33;
+  --color-admin-2ecc5e: #2ECC5E;
+  --color-admin-3a5fbf: #3A5FBF;
+  --color-admin-2ecc9e: #2ECC9E;
+  --color-admin-61a0e4: #61A0E4;
+  --color-admin-170a0c: #170A0C;
+  --color-admin-9ea8b2: #9EA8B2;
+  --color-admin-727a81: #727A81;
+  --color-admin-33393e: #33393E;
+  --color-admin-f4f6f8: #F4F6F8;
+  --color-admin-1a2430: #1A2430;
+  --color-admin-1c2027: #1C2027;
+  --color-admin-3c4c5c: #3C4C5C;
+  --color-admin-2a343e: #2A343E;
+  --color-admin-9db2c6: #9DB2C6;
+  --color-admin-5b4c09: #5B4C09;
+  --color-admin-3a9fe6: #3A9FE6;
+  --color-admin-8c7a1c: #8C7A1C;
+  --color-admin-6f93b5: #6F93B5;
+  --color-admin-a9c8e4: #A9C8E4;
+  --color-admin-7561fc: #7561FC;
+  --color-admin-1c2028: #1C2028;
+  --color-admin-c6bdfd: #C6BDFD;
+  --color-admin-233e63: #233E63;
+  --color-admin-rgba-0-26-56-6: rgba(0,26,56,.6);
+  --color-admin-rgb-18-58-107: rgb(18,58,107);
+  --color-admin-rgba-77-163-255-4: rgba(77,163,255,.4);
+  --color-admin-rgba-77-163-255-0-4: rgba(77,163,255,0.4);
+  --color-admin-rgba-0-26-56-0-6: rgba(0,26,56,0.6);
+  --color-admin-rgba-77-163-255-0-12: rgba(77,163,255,0.12);
+  --color-admin-rgba-124-200-255-35: rgba(124,200,255,.35);
+  --color-admin-rgba-124-200-255-0-35: rgba(124,200,255,0.35);
+}

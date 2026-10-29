@@ -1,0 +1,23 @@
+/* react-colorful 를 둘로 나눠 쓴다 — 위 큰 칸은 채도 영역만, 아래 줄은 색상 막대만 (시안대로 12px 막대) */
+.cp-sat .react-colorful__hue,
+.cp-sat .react-colorful__alpha {
+  display: none;
+}
+.cp-sat .react-colorful {
+  height: 100%;
+}
+.cp-hue .react-colorful__saturation,
+.cp-hue .react-colorful__alpha {
+  display: none;
+}
+.cp-hue .react-colorful {
+  height: 12px;
+}
+.cp-hue .react-colorful__hue {
+  height: 12px !important;
+  border-radius: 20px !important;
+}
+.cp-hue .react-colorful__hue > * {
+  border-radius: 20px !important;
+}
+/* 막대 손잡이는 라이브러리 기본 크기(28px) 그대로 — 옛 화면과 같은 모양 */
